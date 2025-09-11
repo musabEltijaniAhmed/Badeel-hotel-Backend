@@ -1,0 +1,127 @@
+tags:
+  - name: Admin
+    description: Admin management endpoints
+
+components:
+  schemas:
+    RoomCreate:
+      type: object
+      required: [name, price]
+      properties:
+        name: { type: string }
+        price: { type: number, format: double }
+        type: { type: string }
+        description: { type: string }
+    UserUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        email: { type: string }
+
+paths:
+  /admin/rooms:
+    post:
+      tags: [Admin]
+      summary: Create room
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoomCreate'
+      responses:
+        "201":
+          description: Room created
+    get:
+      tags: [Admin]
+      summary: List rooms
+      responses:
+        "200": { description: OK }
+  /admin/rooms/{id}:
+    patch:
+      tags: [Admin]
+      summary: Update room
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomCreate'
+      responses:
+        "200": { description: Updated }
+    delete:
+      tags: [Admin]
+      summary: Delete room
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Deleted }
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List users
+      responses:
+        "200": { description: OK }
+  /admin/users/{id}:
+    patch:
+      tags: [Admin]
+      summary: Update user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        "200": { description: Updated }
+    delete:
+      tags: [Admin]
+      summary: Delete user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Deleted }
+  /admin/bookings:
+    get:
+      tags: [Admin]
+      summary: List bookings
+      responses:
+        "200": { description: OK }
+  /admin/reviews:
+    get:
+      tags: [Admin]
+      summary: List reviews
+      responses:
+        "200": { description: OK }
+  /admin/reviews/{id}:
+    delete:
+      tags: [Admin]
+      summary: Delete review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Deleted }
+  /admin/reports/bookings-csv:
+    get:
+      tags: [Admin]
+      summary: Export bookings CSV
+      responses:
+        "200":
+          description: CSV file 

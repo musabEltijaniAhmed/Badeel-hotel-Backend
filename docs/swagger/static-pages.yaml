@@ -1,0 +1,418 @@
+openapi: 3.0.0
+info:
+  title: Static Pages API
+  description: API لإدارة الصفحات الثابتة مثل سياسة الخصوصية والشروط والأحكام
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /pages/{slug}:
+    get:
+      summary: جلب صفحة ثابتة حسب الـ slug واللغة
+      description: جلب محتوى صفحة ثابتة مع دعم اللغتين العربية والإنجليزية
+      tags:
+        - Static Pages
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: معرف الصفحة (privacy-policy, terms, about-us, contact)
+          schema:
+            type: string
+            enum: [privacy-policy, terms, about-us, contact]
+        - name: lang
+          in: query
+          required: false
+          description: اللغة المطلوبة
+          schema:
+            type: string
+            enum: [ar, en]
+            default: ar
+      responses:
+        '200':
+          description: تم جلب الصفحة بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: تم جلب الصفحة بنجاح
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      slug:
+                        type: string
+                        example: privacy-policy
+                      title:
+                        type: string
+                        example: سياسة الخصوصية
+                      content:
+                        type: string
+                        example: "<h2>سياسة الخصوصية</h2><p>نص سياسة الخصوصية...</p>"
+                      last_updated:
+                        type: string
+                        format: date-time
+                        example: "2025-01-15T10:00:00Z"
+                      updated_by:
+                        type: object
+                        nullable: true
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: أحمد محمد
+                          email:
+                            type: string
+                            example: admin@example.com
+        '400':
+          description: خطأ في البيانات المرسلة
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: اللغة غير مدعومة. يجب أن تكون ar أو en
+                  data:
+                    type: null
+        '404':
+          description: الصفحة غير موجودة
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: الصفحة غير موجودة
+                  data:
+                    type: null
+
+  /pages/admin/all:
+    get:
+      summary: جلب جميع الصفحات الثابتة (للمسؤولين)
+      description: جلب قائمة بجميع الصفحات الثابتة مع محتواها الكامل
+      tags:
+        - Static Pages - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: تم جلب جميع الصفحات بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: تم جلب جميع الصفحات بنجاح
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        slug:
+                          type: string
+                          example: privacy-policy
+                        title_ar:
+                          type: string
+                          example: سياسة الخصوصية
+                        title_en:
+                          type: string
+                          example: Privacy Policy
+                        content_ar:
+                          type: string
+                          example: "<h2>سياسة الخصوصية</h2><p>نص عربي...</p>"
+                        content_en:
+                          type: string
+                          example: "<h2>Privacy Policy</h2><p>English text...</p>"
+                        updated_at:
+                          type: string
+                          format: date-time
+                          example: "2025-01-15T10:00:00Z"
+                        updated_by:
+                          type: object
+                          nullable: true
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: أحمد محمد
+                            email:
+                              type: string
+                              example: admin@example.com
+        '401':
+          description: غير مصرح - يجب تسجيل الدخول
+        '403':
+          description: ممنوع - لا توجد صلاحيات كافية
+
+  /pages/admin/{slug}:
+    get:
+      summary: جلب صفحة ثابتة حسب الـ slug (للمسؤولين)
+      description: جلب صفحة ثابتة مع محتواها الكامل باللغتين
+      tags:
+        - Static Pages - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: معرف الصفحة
+          schema:
+            type: string
+            enum: [privacy-policy, terms, about-us, contact]
+      responses:
+        '200':
+          description: تم جلب الصفحة بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: تم جلب الصفحة بنجاح
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      slug:
+                        type: string
+                        example: privacy-policy
+                      title_ar:
+                        type: string
+                        example: سياسة الخصوصية
+                      title_en:
+                        type: string
+                        example: Privacy Policy
+                      content_ar:
+                        type: string
+                        example: "<h2>سياسة الخصوصية</h2><p>نص عربي...</p>"
+                      content_en:
+                        type: string
+                        example: "<h2>Privacy Policy</h2><p>English text...</p>"
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2025-01-15T10:00:00Z"
+                      updated_by:
+                        type: object
+                        nullable: true
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: أحمد محمد
+                          email:
+                            type: string
+                            example: admin@example.com
+
+  /pages/admin/{id}:
+    put:
+      summary: تحديث صفحة ثابتة (للمسؤولين)
+      description: تحديث محتوى صفحة ثابتة باللغتين العربية والإنجليزية
+      tags:
+        - Static Pages - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: معرف الصفحة
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title_ar
+                - title_en
+                - content_ar
+                - content_en
+              properties:
+                title_ar:
+                  type: string
+                  description: العنوان باللغة العربية
+                  example: "سياسة الخصوصية"
+                title_en:
+                  type: string
+                  description: العنوان باللغة الإنجليزية
+                  example: "Privacy Policy"
+                content_ar:
+                  type: string
+                  description: المحتوى باللغة العربية (يدعم HTML)
+                  example: "<h2>سياسة الخصوصية</h2><p>نص سياسة الخصوصية باللغة العربية...</p>"
+                content_en:
+                  type: string
+                  description: المحتوى باللغة الإنجليزية (يدعم HTML)
+                  example: "<h2>Privacy Policy</h2><p>Privacy policy text in English...</p>"
+      responses:
+        '200':
+          description: تم تحديث الصفحة بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: تم تحديث الصفحة بنجاح
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      slug:
+                        type: string
+                        example: privacy-policy
+                      title_ar:
+                        type: string
+                        example: سياسة الخصوصية
+                      title_en:
+                        type: string
+                        example: Privacy Policy
+                      content_ar:
+                        type: string
+                        example: "<h2>سياسة الخصوصية</h2><p>نص محدث...</p>"
+                      content_en:
+                        type: string
+                        example: "<h2>Privacy Policy</h2><p>Updated text...</p>"
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2025-01-15T11:00:00Z"
+                      updated_by:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: أحمد محمد
+                          email:
+                            type: string
+                            example: admin@example.com
+        '400':
+          description: خطأ في البيانات المرسلة
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: جميع الحقول مطلوبة
+                  data:
+                    type: null
+        '401':
+          description: غير مصرح - يجب تسجيل الدخول
+        '403':
+          description: ممنوع - لا توجد صلاحيات كافية
+        '404':
+          description: الصفحة غير موجودة
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    StaticPage:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: المعرف الفريد للصفحة
+        slug:
+          type: string
+          description: المعرف الثابت للصفحة
+          enum: [privacy-policy, terms, about-us, contact]
+        title_ar:
+          type: string
+          description: العنوان باللغة العربية
+        title_en:
+          type: string
+          description: العنوان باللغة الإنجليزية
+        content_ar:
+          type: string
+          description: المحتوى باللغة العربية (يدعم HTML)
+        content_en:
+          type: string
+          description: المحتوى باللغة الإنجليزية (يدعم HTML)
+        updated_at:
+          type: string
+          format: date-time
+          description: تاريخ آخر تحديث
+        updated_by:
+          type: object
+          nullable: true
+          description: معلومات المسؤول الذي قام بالتحديث
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+
+tags:
+  - name: Static Pages
+    description: عمليات الصفحات الثابتة للمستخدمين
+  - name: Static Pages - Admin
+    description: عمليات إدارة الصفحات الثابتة للمسؤولين

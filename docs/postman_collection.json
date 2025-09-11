@@ -1,0 +1,2394 @@
+{
+  "info": {
+    "_postman_id": "d9a7bc6b-7b9f-4b6e-bb1c-000000000001",
+    "name": "Room Booking API - Properties & Deposit System",
+    "description": "API للحجوزات مع نظام العقارات والمقدم - محدث تلقائياً",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "3.0.0"
+  },
+
+  "item": [
+    {
+      "name": "📄 Static Pages",
+      "description": "إدارة الصفحات الثابتة مثل سياسة الخصوصية والشروط والأحكام",
+      "item": [
+        {
+          "name": "Get Page (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pages/privacy-policy?lang=ar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "privacy-policy"
+              ],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "ar",
+                  "description": "اللغة المطلوبة (ar/en)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Page (English)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pages/about-us?lang=en",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "about-us"
+              ],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en",
+                  "description": "اللغة المطلوبة (ar/en)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contact Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pages/contact?lang=ar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "contact"
+              ],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "ar",
+                  "description": "اللغة المطلوبة (ar/en)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Pages (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pages/admin/all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "admin",
+                "all"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Page by Slug (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pages/admin/privacy-policy",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "admin",
+                "privacy-policy"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Page (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pages/admin/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pages",
+                "admin",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title_ar\": \"سياسة الخصوصية المحدثة\",\n  \"title_en\": \"Updated Privacy Policy\",\n  \"content_ar\": \"<h2>سياسة الخصوصية المحدثة</h2><p>محتوى محدث باللغة العربية مع دعم HTML.</p><ul><li>نقطة أولى</li><li>نقطة ثانية</li></ul>\",\n  \"content_en\": \"<h2>Updated Privacy Policy</h2><p>Updated content in English with HTML support.</p><ul><li>First point</li><li>Second point</li></ul>\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication & Registration",
+      "description": "تسجيل مباشر للعملاء والموظفين والمديرين - بدون أكواد دعوة",
+      "item": [
+        {
+          "name": "Register Customer (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.environment.set('customer_token', json.data.token);",
+                  "  console.log('Customer registered and token set');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"أحمد العميل\",\n  \"email\": \"customer@example.com\",\n  \"password\": \"123456\",\n  \"phone\": \"+966501234567\",\n  \"language\": \"ar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Customer (Explicit)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.environment.set('customer_token', json.data.token);",
+                  "  console.log('Customer registered explicitly and token set');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register/customer",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                "customer"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"سارة العميلة\",\n  \"email\": \"customer2@example.com\",\n  \"password\": \"123456\",\n  \"phone\": \"+966501234568\",\n  \"language\": \"ar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Staff (Direct)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.environment.set('staff_token', json.data.token);",
+                  "  console.log('Staff registered and token set');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register/staff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                "staff"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"محمد الموظف\",\n  \"email\": \"staff@company.com\",\n  \"password\": \"staff123\",\n  \"phone\": \"+966507654321\",\n  \"language\": \"ar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Admin (Direct)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.environment.set('admin_token', json.data.token);",
+                  "  console.log('Admin registered and token set');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register/admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                "admin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"علي المدير\",\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin12345\",\n  \"phone\": \"+966509876543\",\n  \"language\": \"ar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Any User Type)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  // Set token based on user role",
+                  "  const userType = json.data.userType || 'customer';",
+                  "  pm.environment.set(userType + '_token', json.data.token);",
+                  "  console.log(userType + ' token set:', json.data.token);",
+                  "  ",
+                  "  // Also set generic user_token for compatibility",
+                  "  pm.environment.set('user_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+966501234567\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+966501234567\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+966501234567\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏠 Properties Management",
+      "description": "إدارة العقارات والأنواع والوسائط مع نظام المقدم",
+      "item": [
+        {
+          "name": "List Property Types (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties/types",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Property Type Details (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties/types/{{property_type_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types",
+                "{{property_type_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Property Type (Admin Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('property_type_id', json.data.id);",
+                  "  console.log('Property type ID set:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/types",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_en\": \"Hotel\",\n  \"name_ar\": \"فندق\",\n  \"description_en\": \"Hotel rooms and suites\",\n  \"description_ar\": \"غرف وأجنحة فندقية\",\n  \"icon\": \"hotel\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Property Type (Admin Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/types/{{property_type_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types",
+                "{{property_type_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_en\": \"Luxury Hotel\",\n  \"name_ar\": \"فندق فاخر\",\n  \"description_en\": \"Luxury hotel rooms and suites\",\n  \"description_ar\": \"غرف وأجنحة فندقية فاخرة\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Property Type (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/types/{{property_type_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types",
+                "{{property_type_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Seed Property Types (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/types/seed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "types",
+                "seed"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Properties (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "type_id",
+                  "value": "{{property_type_id}}",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "الرياض",
+                  "disabled": true
+                },
+                {
+                  "key": "min_price",
+                  "value": "100",
+                  "disabled": true
+                },
+                {
+                  "key": "max_price",
+                  "value": "1000",
+                  "disabled": true
+                },
+                {
+                  "key": "capacity",
+                  "value": "2",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "available_only",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_order",
+                  "value": "DESC",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Property Details (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties/{{property_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "{{property_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Property (Staff/Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('property_id', json.data.id);",
+                  "  console.log('Property created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "شقة مفروشة بالرياض",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "شقة مفروشة بالكامل في حي الملز",
+                  "type": "text"
+                },
+                {
+                  "key": "type_id",
+                  "value": "{{property_type_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "الرياض",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "حي الملز، شارع الأمير محمد بن عبدالعزيز",
+                  "type": "text"
+                },
+                {
+                  "key": "latitude",
+                  "value": "24.7136",
+                  "type": "text"
+                },
+                {
+                  "key": "longitude",
+                  "value": "46.6753",
+                  "type": "text"
+                },
+                {
+                  "key": "full_price",
+                  "value": "500",
+                  "type": "text"
+                },
+                {
+                  "key": "deposit_type",
+                  "value": "percentage",
+                  "type": "text"
+                },
+                {
+                  "key": "deposit_value",
+                  "value": "30",
+                  "type": "text"
+                },
+                {
+                  "key": "capacity",
+                  "value": "4",
+                  "type": "text"
+                },
+                {
+                  "key": "bedrooms",
+                  "value": "2",
+                  "type": "text"
+                },
+                {
+                  "key": "bathrooms",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "amenities",
+                  "value": "[\"wifi\", \"parking\", \"kitchen\", \"ac\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "check_in_time",
+                  "value": "15:00:00",
+                  "type": "text"
+                },
+                {
+                  "key": "check_out_time",
+                  "value": "12:00:00",
+                  "type": "text"
+                },
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Property (Staff/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/{{property_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "{{property_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"شقة مفروشة فاخرة بالرياض\",\n  \"description\": \"شقة مفروشة بالكامل مع إطلالة جميلة\",\n  \"full_price\": 600,\n  \"featured\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Property (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/{{property_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "{{property_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Property Media (Staff/Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.media && json.data.media.length > 0) {",
+                  "  pm.environment.set('media_id', json.data.media[0].id);",
+                  "  console.log('Media added with ID:', json.data.media[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/{{property_id}}/media",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "{{property_id}}",
+                "media"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "alt_text",
+                  "value": "صورة الشقة من الخارج",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "واجهة الشقة",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "صورة جميلة للشقة من الخارج",
+                  "type": "text"
+                },
+                {
+                  "key": "is_primary",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Property Stats (Staff/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/properties/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "admin",
+                "stats"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏛️ Property Booking with Deposit",
+      "description": "حجز العقارات مع دفع مقدم",
+      "item": [
+        {
+          "name": "Create Property Booking with Deposit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.booking) {",
+                  "  pm.environment.set('booking_id', json.data.booking.id);",
+                  "  pm.environment.set('remaining_amount', json.data.payment_summary.remaining_amount);",
+                  "  console.log('Property booking created:', json.data.booking.id);",
+                  "  console.log('Deposit paid:', json.data.payment_summary.deposit_paid);",
+                  "  console.log('Remaining amount:', json.data.payment_summary.remaining_amount);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/property-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "property-booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property_id\": {{property_id}},\n  \"check_in\": \"2024-08-15T15:00:00.000Z\",\n  \"check_out\": \"2024-08-17T12:00:00.000Z\",\n  \"guest_count\": 2,\n  \"payment_method\": \"mada\",\n  \"special_requests\": \"أريد غرفة بإطلالة جميلة\",\n  \"couponCode\": \"{{coupon_code}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Property Booking (No Coupon)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/property-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "property-booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property_id\": {{property_id}},\n  \"check_in\": \"2024-08-20T15:00:00.000Z\",\n  \"check_out\": \"2024-08-22T12:00:00.000Z\",\n  \"guest_count\": 1,\n  \"payment_method\": \"visa\",\n  \"special_requests\": \"Late check-in please\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏛️ Property Booking with Deposit",
+      "description": "حجز العقارات مع دفع مقدم",
+      "item": [
+        {
+          "name": "Create Property Booking with Deposit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.booking) {",
+                  "  pm.environment.set('booking_id', json.data.booking.id);",
+                  "  pm.environment.set('remaining_amount', json.data.payment_summary.remaining_amount);",
+                  "  console.log('Property booking created:', json.data.booking.id);",
+                  "  console.log('Deposit paid:', json.data.payment_summary.deposit_paid);",
+                  "  console.log('Remaining amount:', json.data.payment_summary.remaining_amount);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/property-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "property-booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property_id\": {{property_id}},\n  \"check_in\": \"2024-08-15T15:00:00.000Z\",\n  \"check_out\": \"2024-08-17T12:00:00.000Z\",\n  \"guest_count\": 2,\n  \"payment_method\": \"mada\",\n  \"special_requests\": \"أريد غرفة بإطلالة جميلة\",\n  \"couponCode\": \"{{coupon_code}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Property Booking (No Coupon)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/property-booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "property-booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property_id\": {{property_id}},\n  \"check_in\": \"2024-08-20T15:00:00.000Z\",\n  \"check_out\": \"2024-08-22T12:00:00.000Z\",\n  \"guest_count\": 1,\n  \"payment_method\": \"visa\",\n  \"special_requests\": \"Late check-in please\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer Operations",
+      "description": "عمليات العملاء - تصفح الغرف والحجوزات",
+      "item": [
+        {
+          "name": "List Rooms (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/user/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "rooms"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Booking (Customer Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('booking_id', json.data.id);",
+                  "  console.log('Booking created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{room_id}}\",\n  \"startDate\": \"2024-09-01\",\n  \"endDate\": \"2024-09-05\",\n  \"paymentMethodId\": \"pm_test_123\",\n  \"couponCode\": \"{{coupon_code}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Booking with Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/booking",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{room_id}}\",\n  \"startDate\": \"2024-09-01\",\n  \"endDate\": \"2024-09-05\",\n  \"paymentMethodId\": \"pm_test_123\",\n  \"couponCode\": \"SAVE20\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/booking/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "booking",
+                "{{booking_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validate Coupon Before Purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/validate-coupon",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "validate-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"{{coupon_code}}\",\n  \"orderAmount\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/review",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "review"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{booking_id}}\",\n  \"rating\": 5,\n  \"comment\": \"إقامة رائعة!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "notifications"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Reviews Management",
+      "description": "إدارة تقييمات العملاء للعقارات - نظام تقييم شامل",
+      "item": [
+        {
+          "name": "Create Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('review_id', json.data.id);",
+                  "  console.log('Review created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{booking_id}}\",\n  \"rating\": 5,\n  \"comment\": \"إقامة رائعة! الغرفة نظيفة والخدمة ممتازة\",\n  \"media\": [\n    \"https://cdn.site.com/review1.jpg\",\n    \"https://cdn.site.com/review2.jpg\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Review (Minimal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{booking_id}}\",\n  \"rating\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Property Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/property/{{property_id}}?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "property",
+                "{{property_id}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "rating",
+                  "value": "5",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_order",
+                  "value": "DESC",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/user?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"إقامة جيدة جداً، الغرفة نظيفة والموقع ممتاز\",\n  \"media\": [\n    \"https://cdn.site.com/updated-review.jpg\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Review Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/stats/{{property_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "stats",
+                "{{property_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Send Review Invitation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/invitation/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "invitation",
+                "{{booking_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"كيف كانت تجربتك؟ نود سماع رأيك\",\n  \"channels\": [\"push\", \"sms\", \"email\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: List All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews?page=1&limit=20&status=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "all"
+                },
+                {
+                  "key": "property_id",
+                  "value": "{{property_id}}",
+                  "disabled": true
+                },
+                {
+                  "key": "rating",
+                  "value": "5",
+                  "disabled": true
+                },
+                {
+                  "key": "is_approved",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "is_flagged",
+                  "value": "false",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: Approve Review",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}",
+                "approve"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isApproved\": true,\n  \"adminNotes\": \"تمت الموافقة على التقييم\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: Flag Review",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/flag",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}",
+                "flag"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isFlagged\": true,\n  \"adminNotes\": \"محتوى مسيء - يتطلب مراجعة\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Admin & Staff Operations",
+      "description": "عمليات المديرين والموظفين - إدارة شاملة للنظام",
+      "item": [
+        {
+          "name": "Create Room (Admin Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('room_id', json.data.id);",
+                  "  console.log('Room created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "rooms"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "غرفة ديلوكس",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "500",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "غرفة فاخرة مع إطلالة جميلة",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Rooms (Admin/Staff)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "rooms"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/rooms/{{room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "rooms",
+                "{{room_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 120\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/rooms/{{room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "rooms",
+                "{{room_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "coupons"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Coupons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "coupons"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons/{{coupon_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "coupons",
+                "{{coupon_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons/{{coupon_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "coupons",
+                "{{coupon_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Bookings with Coupon",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/bookings/coupon",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "bookings",
+                "coupon"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validate Coupon (Admin/Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/validate-coupon",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "validate-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"{{coupon_code}}\",\n  \"orderAmount\": 100\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Roles & Permissions Management",
+      "description": "إدارة الأدوار والصلاحيات - للمديرين فقط",
+      "item": [
+        {
+          "name": "List All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "roles"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create New Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "roles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"manager\",\n  \"description\": \"مدير قسم - صلاحيات متوسطة\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "List All Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "permissions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create New Permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "permissions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"manage_inventory\",\n  \"description\": \"إدارة المخزون\",\n  \"resource\": \"inventory\",\n  \"action\": \"manage\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Permission to Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/3/permissions/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "roles",
+                "3",
+                "permissions",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Permission from Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/3/permissions/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "roles",
+                "3",
+                "permissions",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update All Role Permissions",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/3/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "roles",
+                "3",
+                "permissions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1, 2, 5, 8, 12]\n}"
+            }
+          }
+        },
+        {
+          "name": "Change User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{user_id}}/role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleId\": 3\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

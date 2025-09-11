@@ -1,0 +1,145 @@
+tags:
+  - name: User
+    description: Endpoints for authenticated users
+
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        price:
+          type: number
+          format: double
+        capacity:
+          type: integer
+        photoUrl:
+          type: string
+        available:
+          type: boolean
+    BookingRequest:
+      type: object
+      required: [roomId, startDate, endDate, paymentMethodId]
+      properties:
+        roomId:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        paymentMethodId:
+          type: string
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        roomId:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+    ReviewRequest:
+      type: object
+      required: [bookingId, rating]
+      properties:
+        bookingId:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+
+paths:
+  /user/rooms:
+    get:
+      tags:
+        - User
+      summary: List rooms (optionally filter by type)
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Room type filter
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+  /user/booking:
+    post:
+      tags:
+        - User
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        "201":
+          description: Booking created
+  /user/booking/{id}:
+    get:
+      tags:
+        - User
+      summary: Get booking by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        "404":
+          description: Not found
+  /user/review:
+    post:
+      tags:
+        - User
+      summary: Add a review for a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewRequest'
+      responses:
+        "201":
+          description: Review created
+  /user/notifications:
+    get:
+      tags:
+        - User
+      summary: List user notifications
+      responses:
+        "200":
+          description: Notifications list 

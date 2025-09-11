@@ -1,0 +1,683 @@
+openapi: 3.0.3
+info:
+  title: Review API
+  description: |
+    API لتقييم العقارات من قبل المستخدمين بعد انتهاء الإقامة
+    
+    ## الميزات الرئيسية:
+    - إنشاء تقييم جديد
+    - عرض تقييمات العقار
+    - عرض تقييمات المستخدم
+    - تحديث وحذف التقييم
+    - إحصائيات التقييم
+    - دعوات التقييم التلقائية
+    
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://api.example.com/api
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /reviews:
+    post:
+      tags:
+        - Reviews
+      summary: إنشاء تقييم جديد
+      description: |
+        إنشاء تقييم جديد لعقار بعد انتهاء الإقامة.
+        
+        **الشروط:**
+        - يجب أن يكون الحجز مكتمل (status = completed)
+        - يجب أن يكون المستخدم هو صاحب الحجز
+        - لا يمكن التقييم إلا بعد تاريخ المغادرة
+        - كل حجز يسمح بتقييم واحد فقط
+        
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+            examples:
+              basic:
+                summary: تقييم بسيط
+                value:
+                  bookingId: "123e4567-e89b-12d3-a456-426614174000"
+                  rating: 5
+                  comment: "تجربة رائعة، العقار نظيف والخدمة ممتازة"
+              with_media:
+                summary: تقييم مع صور
+                value:
+                  bookingId: "123e4567-e89b-12d3-a456-426614174000"
+                  rating: 4
+                  comment: "العقار جميل والموقع ممتاز"
+                  media:
+                    - "https://example.com/photo1.jpg"
+                    - "https://example.com/photo2.jpg"
+      responses:
+        '201':
+          description: تم إنشاء التقييم بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: "تم إضافة التقييم بنجاح"
+                    data:
+                      id: "456e7890-e89b-12d3-a456-426614174000"
+                      rating: 5
+                      comment: "تجربة رائعة، العقار نظيف والخدمة ممتازة"
+                      media: []
+                      createdAt: "2024-01-15T10:30:00.000Z"
+        '400':
+          description: بيانات غير صحيحة
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_rating:
+                  value:
+                    success: false
+                    message: "التقييم يجب أن يكون من 1 إلى 5"
+                booking_not_completed:
+                  value:
+                    success: false
+                    message: "لا يمكن التقييم إلا بعد انتهاء الإقامة"
+                duplicate_review:
+                  value:
+                    success: false
+                    message: "تم التقييم مسبقاً لهذا الحجز"
+        '403':
+          description: غير مصرح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: الحجز غير موجود
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reviews/property/{propertyId}:
+    get:
+      tags:
+        - Reviews
+      summary: الحصول على تقييمات العقار
+      description: |
+        عرض جميع تقييمات عقار معين مع إمكانية التصفية والترقيم.
+        
+        **التصفية المتاحة:**
+        - حسب التقييم (1-5 نجوم)
+        - ترقيم الصفحات
+        - ترتيب حسب التاريخ (الأحدث أولاً)
+        
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          description: معرف العقار
+          schema:
+            type: integer
+            minimum: 1
+          example: 123
+        - name: page
+          in: query
+          description: رقم الصفحة
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          description: عدد العناصر في الصفحة
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          example: 10
+        - name: rating
+          in: query
+          description: تصفية حسب التقييم
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+          example: 5
+      responses:
+        '200':
+          description: تم جلب التقييمات بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewsListResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    data:
+                      reviews:
+                        - id: "456e7890-e89b-12d3-a456-426614174000"
+                          rating: 5
+                          comment: "تجربة رائعة"
+                          media: []
+                          createdAt: "2024-01-15T10:30:00.000Z"
+                          User:
+                            id: "123e4567-e89b-12d3-a456-426614174000"
+                            firstName: "أحمد"
+                            lastName: "محمد"
+                            avatar: "https://example.com/avatar1.jpg"
+                      pagination:
+                        currentPage: 1
+                        totalPages: 3
+                        totalItems: 25
+                        itemsPerPage: 10
+
+  /reviews/user:
+    get:
+      tags:
+        - Reviews
+      summary: الحصول على تقييمات المستخدم
+      description: |
+        عرض جميع تقييمات المستخدم الحالي مع معلومات العقار والحجز.
+        
+        **المعلومات المرفقة:**
+        - تفاصيل العقار (الاسم، الموقع، الصورة)
+        - تفاصيل الحجز (التواريخ، الحالة)
+        
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: رقم الصفحة
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          description: عدد العناصر في الصفحة
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: تم جلب التقييمات بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserReviewsResponse'
+
+  /reviews/{reviewId}:
+    put:
+      tags:
+        - Reviews
+      summary: تحديث التقييم
+      description: |
+        تحديث تقييم موجود (التقييم، التعليق، الوسائط).
+        
+        **القيود:**
+        - يمكن للمستخدم تحديث تقييمه فقط
+        - لا يمكن التحديث إلا بعد انتهاء الإقامة
+        
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: معرف التقييم
+          schema:
+            type: string
+            format: uuid
+          example: "456e7890-e89b-12d3-a456-426614174000"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReviewRequest'
+      responses:
+        '200':
+          description: تم تحديث التقييم بنجاح
+        '403':
+          description: غير مصرح
+        '404':
+          description: التقييم غير موجود
+
+    delete:
+      tags:
+        - Reviews
+      summary: حذف التقييم
+      description: |
+        حذف تقييم موجود.
+        
+        **القيود:**
+        - يمكن للمستخدم حذف تقييمه فقط
+        
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: معرف التقييم
+          schema:
+            type: string
+            format: uuid
+          example: "456e7890-e89b-12d3-a456-426614174000"
+      responses:
+        '200':
+          description: تم حذف التقييم بنجاح
+        '403':
+          description: غير مصرح
+        '404':
+          description: التقييم غير موجود
+
+  /reviews/stats/{propertyId}:
+    get:
+      tags:
+        - Reviews
+      summary: الحصول على إحصائيات التقييم
+      description: |
+        عرض إحصائيات مفصلة لتقييمات عقار معين.
+        
+        **المعلومات المرفقة:**
+        - إجمالي عدد التقييمات
+        - متوسط التقييم
+        - توزيع التقييمات (1-5 نجوم)
+        - النسب المئوية لكل مستوى
+        
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          description: معرف العقار
+          schema:
+            type: integer
+            minimum: 1
+          example: 123
+      responses:
+        '200':
+          description: تم جلب الإحصائيات بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewStatsResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    data:
+                      totalReviews: 25
+                      averageRating: 4.2
+                      ratingDistribution:
+                        - rating: 5
+                          count: 12
+                          percentage: 48.0
+                        - rating: 4
+                          count: 8
+                          percentage: 32.0
+                        - rating: 3
+                          count: 3
+                          percentage: 12.0
+                        - rating: 2
+                          count: 1
+                          percentage: 4.0
+                        - rating: 1
+                          count: 1
+                          percentage: 4.0
+
+  /reviews/invitation/{bookingId}:
+    post:
+      tags:
+        - Reviews
+      summary: إرسال دعوة تقييم
+      description: |
+        إرسال دعوة تقييم فورية لحجز مكتمل.
+        
+        **الوسائل المستخدمة:**
+        - Push Notification
+        - SMS
+        - Email
+        
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: معرف الحجز
+          schema:
+            type: string
+            format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        '200':
+          description: تم إرسال دعوة التقييم بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+  schemas:
+    CreateReviewRequest:
+      type: object
+      required:
+        - bookingId
+        - rating
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+          description: معرف الحجز المرتبط
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: التقييم من 1 إلى 5 نجوم
+          example: 5
+        comment:
+          type: string
+          maxLength: 1000
+          description: نص التعليق (اختياري)
+          example: "تجربة رائعة، العقار نظيف والخدمة ممتازة"
+        media:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: روابط الصور والفيديو (اختياري)
+          example: ["https://example.com/photo1.jpg"]
+      additionalProperties: false
+
+    UpdateReviewRequest:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: التقييم من 1 إلى 5 نجوم
+          example: 4
+        comment:
+          type: string
+          maxLength: 1000
+          description: نص التعليق
+          example: "تجربة جيدة مع بعض التحسينات"
+        media:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: روابط الصور والفيديو
+          example: ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"]
+      additionalProperties: false
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: معرف التقييم
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: التقييم من 1 إلى 5 نجوم
+        comment:
+          type: string
+          description: نص التعليق
+        media:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: روابط الصور والفيديو
+        isApproved:
+          type: boolean
+          description: هل التقييم معتمد
+        isFlagged:
+          type: boolean
+          description: هل التقييم محدد للمراجعة
+        createdAt:
+          type: string
+          format: date-time
+          description: تاريخ الإنشاء
+        updatedAt:
+          type: string
+          format: date-time
+          description: تاريخ التحديث
+
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: معرف المستخدم
+        firstName:
+          type: string
+          description: الاسم الأول
+        lastName:
+          type: string
+          description: الاسم الأخير
+        avatar:
+          type: string
+          format: uri
+          description: رابط الصورة الشخصية
+
+    PropertyInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: معرف العقار
+        name:
+          type: string
+          description: اسم العقار
+        location:
+          type: string
+          description: موقع العقار
+        image:
+          type: string
+          format: uri
+          description: صورة العقار
+
+    BookingInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: معرف الحجز
+        startDate:
+          type: string
+          format: date
+          description: تاريخ البداية
+        endDate:
+          type: string
+          format: date
+          description: تاريخ النهاية
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+          description: حالة الحجز
+
+    ReviewsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            reviews:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Review'
+                  - type: object
+                    properties:
+                      User:
+                        $ref: '#/components/schemas/UserInfo'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    UserReviewsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            reviews:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Review'
+                  - type: object
+                    properties:
+                      Property:
+                        $ref: '#/components/schemas/PropertyInfo'
+                      Booking:
+                        $ref: '#/components/schemas/BookingInfo'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    ReviewStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            totalReviews:
+              type: integer
+              description: إجمالي عدد التقييمات
+              example: 25
+            averageRating:
+              type: number
+              format: float
+              description: متوسط التقييم
+              example: 4.2
+            ratingDistribution:
+              type: array
+              items:
+                type: object
+                properties:
+                  rating:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    description: مستوى التقييم
+                  count:
+                    type: integer
+                    description: عدد التقييمات
+                  percentage:
+                    type: number
+                    format: float
+                    description: النسبة المئوية
+
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          description: الصفحة الحالية
+          example: 1
+        totalPages:
+          type: integer
+          description: إجمالي عدد الصفحات
+          example: 3
+        totalItems:
+          type: integer
+          description: إجمالي عدد العناصر
+          example: 25
+        itemsPerPage:
+          type: integer
+          description: عدد العناصر في الصفحة
+          example: 10
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          description: رسالة النجاح
+          example: "تم إضافة التقييم بنجاح"
+        data:
+          type: object
+          description: البيانات المرجعة (اختياري)
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: رسالة الخطأ
+          example: "بيانات غير صحيحة"
+        error:
+          type: string
+          description: تفاصيل الخطأ (اختياري)
+
+tags:
+  - name: Reviews
+    description: |
+      عمليات تقييم العقارات من قبل المستخدمين.
+      
+      ## الميزات:
+      - إنشاء وتحديث وحذف التقييمات
+      - عرض تقييمات العقار والمستخدم
+      - إحصائيات التقييم
+      - دعوات التقييم التلقائية
+      
+      ## قواعد العمل:
+      - لا يمكن التقييم إلا بعد انتهاء الإقامة
+      - كل حجز يسمح بتقييم واحد فقط
+      - التقييمات برقم النجوم إلزامية
+      - التعليق والصور اختيارية
