@@ -1,10 +1,11 @@
-const twilio = require('twilio');
+const axios = require('axios');
 
-const { TWILIO_SID, TWILIO_AUTH_TOKEN } = process.env;
+const { SMS_TOKEN } = process.env;
 
-let smsClient = null;
-if (TWILIO_SID && TWILIO_AUTH_TOKEN) {
-  smsClient = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
-}
+const smsConfig = {
+  apiUrl: 'https://app.mobile.net.sa/api/v1/send',
+  token: SMS_TOKEN,
+  senderName: 'Mobile.SA'
+};
 
-module.exports = smsClient; 
+module.exports = smsConfig; 

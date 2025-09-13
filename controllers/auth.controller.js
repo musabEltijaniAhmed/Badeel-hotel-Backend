@@ -28,7 +28,7 @@ exports.register = async (req, res, next) => {
     token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '6d' });
     await user.update({ token });
     // Send welcome SMS (optional)
-    // await sendSMS(phone, 'Welcome to our booking app!');
+    await sendSMS(phone, 'Welcome to our booking app!');
     return res.success({ user, token }, 'User registered', 201);
   } catch (error) {
     next(error);
@@ -64,7 +64,7 @@ exports.forgotPassword = async (req, res, next) => {
     await PasswordReset.create({ userId: user.id, token: otp, expiresAt });
 
         // Send OTP via SMS // TODO: Send OTP
-   // await sendSMS(phone, `Your reset OTP is ${otp}`);
+   await sendSMS(phone, `Your reset OTP is ${otp}`);
 
     return res.success({ "otp": otp, "expiresAt": expiresAt
 
