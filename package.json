@@ -21,13 +21,15 @@
     "postman:link": "node scripts/postman-link-generator.js",
     "postman:sync": "npm run postman:update && npm run postman:link && echo '✅ Postman Collection updated with direct links!'",
     "seed:property-types": "node scripts/seed-property-types.js",
-    "setup:complete": "npm run db:reset && npm run seed:property-types && npm run postman:sync"
+    "create:admin": "node scripts/create-system-admin.js",
+    "setup:complete": "npm run db:reset && npm run seed:property-types && npm run create:admin && npm run postman:sync"
   },
   "author": "",
   "license": "MIT",
-  "dependencies": { 
+  "dependencies": {
     "axios": "^1.12.1",
-    "cors": "^2.8.5", 
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

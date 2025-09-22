@@ -10,16 +10,28 @@ module.exports = (sequelize) => {
     bookingId: {
       type: DataTypes.UUID,
       allowNull: false,
+      references: {
+        model: 'Bookings',
+        key: 'id'
+      },
       comment: 'معرف الحجز المرتبط',
     },
     propertyId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'Properties',
+        key: 'id'
+      },
       comment: 'معرف العقار المرتبط',
     },
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      },
       comment: 'معرف المستخدم صاحب التقييم',
     },
     rating: {

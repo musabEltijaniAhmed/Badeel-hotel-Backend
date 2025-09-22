@@ -2,6 +2,7 @@ require('dotenv').config();
 const { sequelize } = require('../config/db');
 // استثناء نماذج الأدوار مؤقتاً لتجنب مشكلة foreign key
 const { User, Admin, Room, Booking, Review, Notification, PasswordReset, ActivityLog, Tenant, Coupon, PropertyType, Property, PropertyMedia } = require('../models');
+const createSystemAdmin = require('./create-system-admin');
 
 async function setupDatabase() {
   try {
@@ -38,6 +39,16 @@ async function setupDatabase() {
     // عرض قائمة الجداول
     const tables = await sequelize.getQueryInterface().showAllTables();
     tables.forEach(table => console.log(`  - ${table}`));
+    
+    // إنشاء المدير الثابت للنظام
+    console.log('\n🔧 إعداد المدير الثابت للنظام...');
+    try {
+      await createSystemAdmin();
+      console.log('✅ تم إعداد المدير الثابت بنجاح');
+    } catch (adminError) {
+      console.error('⚠️  تحذير: فشل في إنشاء المدير الثابت:', adminError.message);
+      console.log('💡 يمكنك إنشاء المدير يدوياً باستخدام: npm run create:admin');
+    }
     
   } catch (error) {
     console.error('❌ خطأ في إعداد قاعدة البيانات:', error.message);

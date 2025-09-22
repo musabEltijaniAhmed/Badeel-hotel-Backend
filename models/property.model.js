@@ -119,7 +119,7 @@ module.exports = (sequelize) => {
       defaultValue: 0,
     },
     created_by: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'Users',

@@ -37,6 +37,15 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM('en', 'ar'),
       defaultValue: 'en',
     },
+    roleId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Roles',
+        key: 'id'
+      },
+      comment: 'دور المستخدم في النظام',
+    },
   });
   return User;
 }; 

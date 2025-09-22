@@ -32,10 +32,10 @@ module.exports = (sequelize) => {
     allowNull: false
   },
   updated_by: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: true,
     references: {
-      model: 'admins',
+      model: 'Admins',
       key: 'id'
     }
   },

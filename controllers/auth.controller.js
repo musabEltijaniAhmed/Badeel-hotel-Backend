@@ -1,8 +1,4 @@
-const crypto = require('crypto');
-
-function md5Hash(str) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Role } = require('../models');
 const { sendSMS } = require('../utils/sms.service');
@@ -17,7 +13,7 @@ exports.register = async (req, res, next) => {
   
         const { name, phone, email, password, language } = req.body;
     
-    const hashed = md5Hash(password);
+    const hashed = await bcrypt.hash(password, 12);
         const existingUser = await User.findOne({ where: { phone } });
     if (existingUser) return res.fail('USER_ALREADY_EXISTS');
 
@@ -40,7 +36,8 @@ exports.login = async (req, res, next) => {
     const { phone, password } = req.body;
     const user = await User.findOne({ where: { phone } });
     if (!user) return res.fail('USER_NOT_FOUND', null, 404);
-        if (md5Hash(password) !== user.password) {
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.fail('INVALID_CREDENTIALS', null, 400);
     }
 
@@ -82,7 +79,7 @@ exports.resetPassword = async (req, res, next) => {
     const user = await User.findByPk(record.userId);
     if (!user) return res.fail('USER_NOT_FOUND', null, 404);
 
-        const hashed = md5Hash(newPassword);
+        const hashed = await bcrypt.hash(newPassword, 12);
     await user.update({ password: hashed });
     await record.update({ used: true });
     return res.success(null, 'PASSWORD_RESET_SUCCESS');
@@ -112,7 +109,7 @@ exports.registerCustomer = async (req, res, next) => {
   try {
     const { name, phone, email, password, language } = req.body;
     
-    const hashed = md5Hash(password);
+    const hashed = await bcrypt.hash(password, 12);
     const existingUser = await User.findOne({ where: { phone } });
     if (existingUser) return res.fail('USER_ALREADY_EXISTS');
 
@@ -153,7 +150,7 @@ exports.registerStaff = async (req, res, next) => {
   try {
     const { name, phone, email, password, language } = req.body;
     
-    const hashed = md5Hash(password);
+    const hashed = await bcrypt.hash(password, 12);
     const existingUser = await User.findOne({ where: { phone } });
     if (existingUser) return res.fail('USER_ALREADY_EXISTS');
 
@@ -194,7 +191,7 @@ exports.registerAdmin = async (req, res, next) => {
   try {
     const { name, phone, email, password, language } = req.body;
     
-    const hashed = md5Hash(password);
+    const hashed = await bcrypt.hash(password, 12);
     const existingUser = await User.findOne({ where: { phone } });
     if (existingUser) return res.fail('USER_ALREADY_EXISTS');
 
