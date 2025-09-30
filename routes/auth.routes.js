@@ -74,9 +74,10 @@ router.post('/forgot-password', saudiPhone(),
 );
 router.post('/reset-password', saudiPhone(),
   validate([
-        body('phone').notEmpty(),
+    body('phone').notEmpty(),
     body('otp').isLength({ min: 6, max: 6 }),
     body('newPassword').isLength({ min: 6 }),
+    body('confirmPassword').isLength({ min: 6 }),
   ]),
   resetPassword
 );

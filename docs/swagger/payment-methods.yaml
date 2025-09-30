@@ -1,0 +1,296 @@
+openapi: 3.0.0
+info:
+  title: Payment Methods API
+  description: API endpoints for managing payment methods
+  version: 1.0.0
+
+components:
+  schemas:
+    PaymentMethod:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the payment method
+        provider_name:
+          type: string
+          description: Name of the payment provider
+        provider_code:
+          type: string
+          description: Unique code for the provider (e.g., TABBY, TAMARA)
+        image_url:
+          type: string
+          format: uri
+          description: URL to the provider's logo/image
+        description:
+          type: string
+          description: Description of the payment method
+        status:
+          type: string
+          enum: [active, blocked]
+          description: Current status of the payment method
+        display_order:
+          type: integer
+          description: Order in which to display the payment method
+        public_key:
+          type: string
+          description: Public API key for the provider
+        merchant_id:
+          type: string
+          description: Optional merchant ID for the provider
+        callback_url:
+          type: string
+          format: uri
+          description: Webhook callback URL for the provider
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - provider_name
+        - provider_code
+        - status
+        - display_order
+
+    PaymentMethodPublic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider_name:
+          type: string
+        provider_code:
+          type: string
+        image_url:
+          type: string
+          format: uri
+        description:
+          type: string
+        display_order:
+          type: integer
+      required:
+        - id
+        - provider_name
+        - provider_code
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+paths:
+  /admin/payment-methods:
+    get:
+      tags:
+        - Admin - Payment Methods
+      summary: List all payment methods
+      description: Get a paginated list of all payment methods with optional filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Items per page
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, blocked]
+          description: Filter by status
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search in provider name or code
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  total_pages:
+                    type: integer
+                  current_page:
+                    type: integer
+                  payment_methods:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentMethod'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Admin - Payment Methods
+      summary: Create a new payment method
+      description: Add a new payment provider to the system
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '201':
+          description: Payment method created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /admin/payment-methods/{id}:
+    put:
+      tags:
+        - Admin - Payment Methods
+      summary: Update a payment method
+      description: Update an existing payment method's details
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Payment method ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: Payment method updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Payment method not found
+    
+    delete:
+      tags:
+        - Admin - Payment Methods
+      summary: Delete a payment method
+      description: Permanently remove a payment method
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Payment method ID
+      responses:
+        '204':
+          description: Payment method deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Payment method not found
+
+  /admin/payment-methods/{id}/toggle-status:
+    patch:
+      tags:
+        - Admin - Payment Methods
+      summary: Toggle payment method status
+      description: Enable or disable a payment method
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Payment method ID
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Payment method not found
+
+  /payment-methods:
+    get:
+      tags:
+        - Client - Payment Methods
+      summary: List active payment methods
+      description: Get a list of all active payment methods for clients
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_methods:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentMethodPublic'
+        '401':
+          description: Unauthorized

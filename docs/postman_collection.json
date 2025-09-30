@@ -91,7 +91,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -114,7 +114,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -141,7 +141,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -174,9 +174,14 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.token) {",
-                  "  pm.environment.set('customer_token', json.data.token);",
+                  "const response = pm.response.json();",
+                  "if (response && response.user && response.user.access_token) {",
+                  "  pm.environment.set('auth', response.user.access_token);",
+                  "} else if (response && response.data && response.data.access_token) {",
+                  "  pm.environment.set('seller_token', response.data.access_token);",
+                  "} else if (response && response.data && response.data.token) {",
+                  "  pm.environment.set('auth', response.data.token);",
+                  "  pm.environment.set('customer_token', response.data.token);",
                   "  console.log('Customer registered and token set');",
                   "}"
                 ]
@@ -214,9 +219,14 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.token) {",
-                  "  pm.environment.set('customer_token', json.data.token);",
+                  "const response = pm.response.json();",
+                  "if (response && response.user && response.user.access_token) {",
+                  "  pm.environment.set('auth', response.user.access_token);",
+                  "} else if (response && response.data && response.data.access_token) {",
+                  "  pm.environment.set('seller_token', response.data.access_token);",
+                  "} else if (response && response.data && response.data.token) {",
+                  "  pm.environment.set('auth', response.data.token);",
+                  "  pm.environment.set('customer_token', response.data.token);",
                   "  console.log('Customer registered explicitly and token set');",
                   "}"
                 ]
@@ -255,9 +265,14 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.token) {",
-                  "  pm.environment.set('staff_token', json.data.token);",
+                  "const response = pm.response.json();",
+                  "if (response && response.user && response.user.access_token) {",
+                  "  pm.environment.set('auth', response.user.access_token);",
+                  "} else if (response && response.data && response.data.access_token) {",
+                  "  pm.environment.set('seller_token', response.data.access_token);",
+                  "} else if (response && response.data && response.data.token) {",
+                  "  pm.environment.set('auth', response.data.token);",
+                  "  pm.environment.set('staff_token', response.data.token);",
                   "  console.log('Staff registered and token set');",
                   "}"
                 ]
@@ -296,9 +311,14 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.token) {",
-                  "  pm.environment.set('admin_token', json.data.token);",
+                  "const response = pm.response.json();",
+                  "if (response && response.user && response.user.access_token) {",
+                  "  pm.environment.set('auth', response.user.access_token);",
+                  "} else if (response && response.data && response.data.access_token) {",
+                  "  pm.environment.set('seller_token', response.data.access_token);",
+                  "} else if (response && response.data && response.data.token) {",
+                  "  pm.environment.set('auth', response.data.token);",
+                  "  pm.environment.set('admin_token', response.data.token);",
                   "  console.log('Admin registered and token set');",
                   "}"
                 ]
@@ -337,15 +357,20 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.token) {",
+                  "const response = pm.response.json();",
+                  "if (response && response.user && response.user.access_token) {",
+                  "  pm.environment.set('auth', response.user.access_token);",
+                  "} else if (response && response.data && response.data.access_token) {",
+                  "  pm.environment.set('seller_token', response.data.access_token);",
+                  "} else if (response && response.data && response.data.token) {",
                   "  // Set token based on user role",
-                  "  const userType = json.data.userType || 'customer';",
-                  "  pm.environment.set(userType + '_token', json.data.token);",
-                  "  console.log(userType + ' token set:', json.data.token);",
+                  "  const userType = response.data.userType || 'customer';",
+                  "  pm.environment.set(userType + '_token', response.data.token);",
+                  "  console.log(userType + ' token set:', response.data.token);",
                   "  ",
                   "  // Also set generic user_token for compatibility",
-                  "  pm.environment.set('user_token', json.data.token);",
+                  "  pm.environment.set('user_token', response.data.token);",
+                  "  pm.environment.set('auth', response.data.token);",
                   "}"
                 ]
               }
@@ -423,7 +448,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+966501234567\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\"\n}"
+              "raw": "{\n  \"phone\": \"+966501234567\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
             }
           }
         },
@@ -434,7 +459,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -515,7 +540,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -545,7 +570,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -572,7 +597,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -595,7 +620,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -720,7 +745,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -835,7 +860,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -861,7 +886,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -897,7 +922,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -950,7 +975,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1000,7 +1025,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1030,7 +1055,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1084,7 +1109,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1114,7 +1139,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1180,7 +1205,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1210,7 +1235,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1236,7 +1261,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1263,7 +1288,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1293,7 +1318,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1319,7 +1344,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1365,7 +1390,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1394,7 +1419,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1462,7 +1487,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1498,7 +1523,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1524,7 +1549,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1568,7 +1593,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1612,7 +1637,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1672,7 +1697,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1704,7 +1729,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1732,7 +1757,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1775,7 +1800,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1817,7 +1842,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1839,7 +1864,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1866,7 +1891,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1889,7 +1914,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1911,7 +1936,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1938,7 +1963,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1961,7 +1986,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -1983,7 +2008,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2005,7 +2030,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2022,24 +2047,92 @@
           }
         },
         {
-          "name": "Create Coupon",
+          "name": "Create Percentage Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.id) {",
+                  "    pm.environment.set('coupon_id', response.data.id);",
+                  "    pm.environment.set('coupon_code', response.data.code);",
+                  "    console.log('Coupon created with ID:', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
               "raw": "{{base_url}}/admin/coupons",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "coupons"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["admin", "coupons"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE20\",\n  \"type\": \"percentage\",\n  \"value\": 20,\n  \"start_date\": \"2025-01-01T00:00:00Z\",\n  \"end_date\": \"2025-12-31T23:59:59Z\",\n  \"min_order_amount\": 100,\n  \"usage_limit\": 1000,\n  \"status\": \"active\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Fixed Amount Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "coupons"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FLAT50\",\n  \"type\": \"fixed_amount\",\n  \"value\": 50,\n  \"start_date\": \"2025-01-01T00:00:00Z\",\n  \"end_date\": \"2025-12-31T23:59:59Z\",\n  \"min_order_amount\": 150,\n  \"usage_limit\": 500,\n  \"status\": \"active\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Limited Time Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "coupons"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FLASH25\",\n  \"type\": \"percentage\",\n  \"value\": 25,\n  \"start_date\": \"{{$isoTimestamp}}\",\n  \"end_date\": \"{{$moment($isoTimestamp).add(24, 'hours')}}\",\n  \"min_order_amount\": 200,\n  \"usage_limit\": 100,\n  \"status\": \"active\"\n}"
             }
           }
         },
@@ -2050,17 +2143,47 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/admin/coupons",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "coupons"
+              "raw": "{{base_url}}/admin/coupons?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "coupons"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "percentage",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "SAVE",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_order",
+                  "value": "DESC",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -2071,20 +2194,22 @@
             "method": "PATCH",
             "header": [
               {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
               "raw": "{{base_url}}/admin/coupons/{{coupon_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "coupons",
-                "{{coupon_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["admin", "coupons", "{{coupon_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 30,\n  \"min_order_amount\": 120,\n  \"usage_limit\": 2000,\n  \"status\": \"active\"\n}"
             }
           }
         },
@@ -2095,7 +2220,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2118,18 +2243,41 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/admin/bookings/coupon",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "bookings",
-                "coupon"
+              "raw": "{{base_url}}/admin/bookings/coupon?page=1&limit=10&coupon_code={{coupon_code}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bookings", "coupon"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "coupon_code",
+                  "value": "{{coupon_code}}"
+                },
+                {
+                  "key": "status",
+                  "value": "used",
+                  "disabled": true
+                },
+                {
+                  "key": "date_from",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "date_to",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -2145,7 +2293,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2167,6 +2315,172 @@
       ]
     },
     {
+      "name": "💳 Payment Methods Management",
+      "description": "إدارة طرق الدفع مثل تابي وتمارا وغيرها",
+      "item": [
+        {
+          "name": "List Payment Methods (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payment-methods?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payment-methods"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by status (active/blocked)",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "tabby",
+                  "description": "Search in provider name or code",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Payment Method (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('payment_method_id', json.data.id);",
+                  "  console.log('Payment method created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payment-methods",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payment-methods"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider_name\": \"Tabby\",\n  \"provider_code\": \"TABBY\",\n  \"image_url\": \"https://cdn.tabby.ai/logo.png\",\n  \"description\": \"Split your purchase into 4 interest-free payments\",\n  \"status\": \"active\",\n  \"display_order\": 1,\n  \"public_key\": \"pk_test_xxxx\",\n  \"secret_key\": \"sk_test_xxxx\",\n  \"merchant_id\": \"mer_xxxx\",\n  \"callback_url\": \"https://api.example.com/webhooks/tabby\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Payment Method (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payment-methods/{{payment_method_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payment-methods", "{{payment_method_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider_name\": \"Tabby - Buy Now Pay Later\",\n  \"description\": \"Updated description for Tabby payment service\",\n  \"display_order\": 2,\n  \"public_key\": \"pk_test_yyyy\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Payment Method (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payment-methods/{{payment_method_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payment-methods", "{{payment_method_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Payment Method Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payment-methods/{{payment_method_id}}/toggle-status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payment-methods", "{{payment_method_id}}", "toggle-status"]
+            }
+          }
+        },
+        {
+          "name": "List Active Payment Methods (Client)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payment-methods",
+              "host": ["{{base_url}}"],
+              "path": ["payment-methods"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "⚙️ Roles & Permissions Management",
       "description": "إدارة الأدوار والصلاحيات - للمديرين فقط",
       "item": [
@@ -2177,7 +2491,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2203,7 +2517,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2229,7 +2543,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2255,7 +2569,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2281,7 +2595,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2306,7 +2620,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2335,7 +2649,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {
@@ -2367,7 +2681,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
+                "value": "Bearer {{auth}}"
               }
             ],
             "url": {

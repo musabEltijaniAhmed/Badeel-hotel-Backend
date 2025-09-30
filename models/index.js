@@ -1,6 +1,7 @@
 const { sequelize, connectWithRetry } = require('../config/db');
 
 const models = {};
+models.PaymentMethod = require('./paymentMethod.model')(sequelize);
 models.User = require('./user.model')(sequelize);
 models.Admin = require('./admin.model')(sequelize);
 models.Room = require('./room.model')(sequelize);

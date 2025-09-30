@@ -48,10 +48,12 @@ const options = {
         },
         ResetPasswordInput: {
           type: 'object',
-          required: ['token', 'newPassword'],
+          required: ['phone', 'otp', 'newPassword', 'confirmPassword'],
           properties: {
-            token: { type: 'string', example: '1234567890' },
+            phone: { type: 'string', example: '+966501234567' },
+            otp: { type: 'string', example: '123456' },
             newPassword: { type: 'string', example: 'newpassword123' },
+            confirmPassword: { type: 'string', example: 'newpassword123' },
           },
         },
       },

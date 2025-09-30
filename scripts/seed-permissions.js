@@ -71,6 +71,12 @@ const permissions = [
   { name: 'view_reviews', description: 'عرض التقييمات', resource: 'reviews', action: 'view' },
   { name: 'create_review', description: 'إنشاء تقييم', resource: 'reviews', action: 'create' },
   { name: 'moderate_reviews', description: 'الإشراف على التقييمات', resource: 'reviews', action: 'moderate' },
+
+  // صلاحيات طرق الدفع
+  { name: 'payment_methods_view', description: 'عرض طرق الدفع', resource: 'payment_methods', action: 'view' },
+  { name: 'payment_methods_create', description: 'إنشاء طريقة دفع', resource: 'payment_methods', action: 'create' },
+  { name: 'payment_methods_edit', description: 'تحديث طريقة دفع', resource: 'payment_methods', action: 'edit' },
+  { name: 'payment_methods_delete', description: 'حذف طريقة دفع', resource: 'payment_methods', action: 'delete' },
 ];
 
 // ربط الأدوار بالصلاحيات
@@ -94,7 +100,8 @@ const rolePermissions = {
     'view_reports', 'export_reports',
     'view_support', 'respond_support',
     'manage_settings', 'manage_roles',
-    'view_reviews', 'create_review', 'moderate_reviews'
+    'view_reviews', 'create_review', 'moderate_reviews',
+    'payment_methods_view', 'payment_methods_create', 'payment_methods_edit', 'payment_methods_delete'
   ],
 
   // صلاحيات الموظفين (staff) - صلاحيات محدودة
@@ -106,7 +113,8 @@ const rolePermissions = {
     'view_users', 'edit_profile',
     'view_reports',
     'view_support', 'respond_support',
-    'view_reviews', 'moderate_reviews'
+    'view_reviews', 'moderate_reviews',
+    'payment_methods_view'
   ]
 };
 

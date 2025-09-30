@@ -5,7 +5,7 @@ const authMiddleware = require('../middlewares/auth.middleware');
 const validateMiddleware = require('../middlewares/validate.middleware');
 
 // Middleware للمصادقة
-router.use(authMiddleware);
+router.use(authMiddleware.authenticate());
 
 /**
  * @swagger
@@ -192,7 +192,10 @@ router.put('/:reviewId',
  *       404:
  *         description: التقييم غير موجود
  */
-router.delete('/:reviewId', ReviewController.deleteReview);
+router.delete('/:reviewId', 
+  validateMiddleware.validateReviewParams,
+  ReviewController.deleteReview
+);
 
 /**
  * @swagger

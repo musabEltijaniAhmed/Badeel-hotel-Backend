@@ -73,15 +73,36 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
   try {
-        const { phone, otp, newPassword } = req.body;
-    const record = await PasswordReset.findOne({ where: { token: otp, used: false } });
-    if (!record || record.expiresAt < new Date()) return res.fail('RESET_OTP_SENT', null, 400);
+    const { phone, otp, newPassword, confirmPassword } = req.body;
+    
+    // التحقق من تطابق كلمات المرور
+    if (newPassword !== confirmPassword) {
+      return res.fail('PASSWORDS_DO_NOT_MATCH', null, 400);
+    }
+    
+    // التحقق من صحة OTP
+    const record = await PasswordReset.findOne({ 
+      where: { token: otp, used: false } 
+    });
+    
+    if (!record || record.expiresAt < new Date()) {
+      return res.fail('INVALID_OR_EXPIRED_OTP', null, 400);
+    }
+    
+    // التحقق من وجود المستخدم
     const user = await User.findByPk(record.userId);
     if (!user) return res.fail('USER_NOT_FOUND', null, 404);
+    
+    // التحقق من أن رقم الهاتف يطابق المستخدم
+    if (user.phone !== phone) {
+      return res.fail('PHONE_MISMATCH', null, 400);
+    }
 
-        const hashed = await bcrypt.hash(newPassword, 12);
+    // تحديث كلمة المرور
+    const hashed = await bcrypt.hash(newPassword, 12);
     await user.update({ password: hashed });
     await record.update({ used: true });
+    
     return res.success(null, 'PASSWORD_RESET_SUCCESS');
   } catch (error) {
     next(error);

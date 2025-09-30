@@ -9,10 +9,13 @@ const { sequelize, connectWithRetry } = require('./models');
 // Routes
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const paymentMethodRoutes = require('./routes/paymentMethod.routes');
 const adminRoutes = require('./routes/admin.routes');
 const rolesRoutes = require('./routes/roles.routes');
 const propertyRoutes = require('./routes/property.routes');
+const propertyMediaRoutes = require('./routes/propertyMedia.routes');
 const staticPageRoutes = require('./routes/staticPage.routes');
+const reviewRoutes = require('./routes/review.routes');
 
 const errorMiddleware = require('./middlewares/error.middleware');
 
@@ -26,6 +29,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 // Response helper middleware
 const responseMiddleware = require('./utils/response.middleware');
 app.use(responseMiddleware);
@@ -45,6 +49,9 @@ app.use('/admin', adminRoutes);
 app.use('/admin', rolesRoutes); // إدارة الأدوار والصلاحيات
 app.use('/properties', propertyRoutes); // إدارة العقارات
 app.use('/pages', staticPageRoutes); // الصفحات الثابتة
+app.use('/', paymentMethodRoutes); // Payment Methods
+app.use('/', propertyMediaRoutes); // Property Media Routes
+app.use('/reviews', reviewRoutes); // Reviews Routes
 
 // Error Handler
 app.use(errorMiddleware);

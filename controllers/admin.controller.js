@@ -100,7 +100,13 @@ exports.exportBookingsCSV = async (req, res, next) => {
 
 exports.listReviews = async (req, res, next) => {
   try {
-    const reviews = await Review.findAll({ include: [Booking, User] });
+    const reviews = await Review.findAll({
+      include: [
+        { model: Booking },
+        { model: User, as: 'User' }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
     res.json(reviews);
   } catch (error) {
     next(error);
