@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
     allowNull: false,
     unique: true,
     validate: {
-      isIn: [['privacy-policy', 'terms', 'about-us', 'contact']]
+      is: /^[a-z0-9-]+$/
     }
   },
   title_ar: {
@@ -35,7 +35,7 @@ module.exports = (sequelize) => {
     type: DataTypes.UUID,
     allowNull: true,
     references: {
-      model: 'Admins',
+      model: 'Users',
       key: 'id'
     }
   },

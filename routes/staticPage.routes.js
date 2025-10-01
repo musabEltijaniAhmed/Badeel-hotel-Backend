@@ -2,17 +2,20 @@ const express = require('express');
 const router = express.Router();
 const staticPageController = require('../controllers/staticPage.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
-const authorizeMiddleware = require('../middlewares/authorize.middleware');
+const { requireAdmin } = require('../middlewares/permission.middleware');
+const validateMiddleware = require('../middlewares/validate.middleware');
+
+// مسارات المسؤولين (تتطلب مصادقة وتفويض)
+router.use('/admin', authenticate()); // التحقق من المصادقة
+router.use('/admin', requireAdmin); // التحقق من الصلاحيات
+
+router.get('/admin/pages', staticPageController.getAllPages); // List all pages
+router.get('/admin/pages/:slug', staticPageController.getPageBySlug); // Get page by slug
+router.post('/admin/pages', validateMiddleware.validateStaticPage, staticPageController.createPage); // Create new page
+router.put('/admin/pages/:id', validateMiddleware.validateStaticPage, staticPageController.updatePage); // Update page
+router.delete('/admin/pages/:id', staticPageController.deletePage); // Delete page
 
 // مسارات المستخدمين (عامة)
 router.get('/:slug', staticPageController.getPage);
-
-// مسارات المسؤولين (تتطلب مصادقة وتفويض)
-router.use(authenticate()); // التحقق من المصادقة
-router.use(authorizeMiddleware(['admin', 'super_admin'])); // التحقق من الصلاحيات
-
-router.get('/admin/all', staticPageController.getAllPages);
-router.get('/admin/:slug', staticPageController.getPageBySlug);
-router.put('/admin/:id', staticPageController.updatePage);
 
 module.exports = router;

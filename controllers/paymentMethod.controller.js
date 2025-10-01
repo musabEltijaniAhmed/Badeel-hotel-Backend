@@ -17,8 +17,8 @@ exports.listPaymentMethods = async (req, res) => {
     if (status) where.status = status;
     if (search) {
       where[Op.or] = [
-        { provider_name: { [Op.iLike]: `%${search}%` } },
-        { provider_code: { [Op.iLike]: `%${search}%` } }
+        { provider_name: { [Op.like]: `%${search}%` } },
+        { provider_code: { [Op.like]: `%${search}%` } }
       ];
     }
 
@@ -67,12 +67,22 @@ exports.updatePaymentMethod = async (req, res) => {
     await paymentMethod.update(req.body);
     res.json(paymentMethod.toAdminJSON());
   } catch (error) {
+    console.error('Error in updatePaymentMethod:', error);
     if (error.name === 'SequelizeUniqueConstraintError') {
-      res.status(400).json({ error: 'Provider code must be unique' });
+      res.status(400).json({ 
+        error: 'Provider code must be unique',
+        details: error.message
+      });
     } else if (error.name === 'SequelizeValidationError') {
-      res.status(400).json({ error: error.errors[0].message });
+      res.status(400).json({ 
+        error: error.errors[0].message,
+        details: error.message
+      });
     } else {
-      res.status(500).json({ error: 'Failed to update payment method' });
+      res.status(500).json({ 
+        error: 'Failed to update payment method',
+        details: error.message
+      });
     }
   }
 };

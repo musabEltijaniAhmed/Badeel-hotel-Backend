@@ -2703,6 +2703,138 @@
           }
         }
       ]
+    },
+    {
+      "name": "⚙️ System Settings Management",
+      "description": "إدارة إعدادات النظام - للمديرين فقط",
+      "item": [
+        {
+          "name": "Get All Settings (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Get Settings by Group (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings/sms",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings", "sms"]
+            }
+          }
+        },
+        {
+          "name": "Update Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"settings\": [\n    {\n      \"key\": \"sms_api_key\",\n      \"value\": \"your-api-key-here\"\n    },\n    {\n      \"key\": \"sms_sender_id\",\n      \"value\": \"YourApp\"\n    },\n    {\n      \"key\": \"sms_enabled\",\n      \"value\": \"true\",\n      \"is_active\": true\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Toggle Setting Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings/sms_enabled/toggle",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings", "sms_enabled", "toggle"]
+            }
+          }
+        },
+        {
+          "name": "Update Firebase Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"settings\": [\n    {\n      \"key\": \"firebase_server_key\",\n      \"value\": \"your-server-key-here\"\n    },\n    {\n      \"key\": \"firebase_project_id\",\n      \"value\": \"your-project-id\"\n    },\n    {\n      \"key\": \"firebase_client_email\",\n      \"value\": \"firebase-adminsdk@project.iam.gserviceaccount.com\"\n    },\n    {\n      \"key\": \"firebase_private_key\",\n      \"value\": \"-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n\"\n    },\n    {\n      \"key\": \"push_notifications_enabled\",\n      \"value\": \"true\",\n      \"is_active\": true\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Email Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settings",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "settings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"settings\": [\n    {\n      \"key\": \"smtp_host\",\n      \"value\": \"smtp.gmail.com\"\n    },\n    {\n      \"key\": \"smtp_port\",\n      \"value\": \"587\"\n    },\n    {\n      \"key\": \"smtp_user\",\n      \"value\": \"your-email@gmail.com\"\n    },\n    {\n      \"key\": \"smtp_password\",\n      \"value\": \"your-app-specific-password\"\n    },\n    {\n      \"key\": \"smtp_from_email\",\n      \"value\": \"noreply@yourapp.com\"\n    },\n    {\n      \"key\": \"smtp_from_name\",\n      \"value\": \"Your App Name\"\n    },\n    {\n      \"key\": \"email_enabled\",\n      \"value\": \"true\",\n      \"is_active\": true\n    }\n  ]\n}"
+            }
+          }
+        }
+      ]
     }
   ]
 }

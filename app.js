@@ -16,6 +16,7 @@ const propertyRoutes = require('./routes/property.routes');
 const propertyMediaRoutes = require('./routes/propertyMedia.routes');
 const staticPageRoutes = require('./routes/staticPage.routes');
 const reviewRoutes = require('./routes/review.routes');
+const systemSettingRoutes = require('./routes/systemSetting.routes');
 
 const errorMiddleware = require('./middlewares/error.middleware');
 
@@ -48,10 +49,11 @@ app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/admin', rolesRoutes); // إدارة الأدوار والصلاحيات
 app.use('/properties', propertyRoutes); // إدارة العقارات
-app.use('/pages', staticPageRoutes); // الصفحات الثابتة
+app.use('/', staticPageRoutes); // الصفحات الثابتة
 app.use('/', paymentMethodRoutes); // Payment Methods
 app.use('/', propertyMediaRoutes); // Property Media Routes
 app.use('/reviews', reviewRoutes); // Reviews Routes
+app.use('/', systemSettingRoutes); // System Settings Routes
 
 // Error Handler
 app.use(errorMiddleware);

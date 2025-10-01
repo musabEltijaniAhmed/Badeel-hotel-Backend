@@ -108,6 +108,51 @@ module.exports.validateBookingId = [
     .withMessage('معرف الحجز غير صحيح')
 ];
 
+// التحقق من صحة بيانات الصفحة الثابتة
+module.exports.validateStaticPage = [
+  body('title_ar')
+    .notEmpty()
+    .withMessage('العنوان بالعربية مطلوب')
+    .isLength({ max: 255 })
+    .withMessage('العنوان بالعربية يجب أن لا يتجاوز 255 حرف'),
+
+  body('title_en')
+    .notEmpty()
+    .withMessage('العنوان بالإنجليزية مطلوب')
+    .isLength({ max: 255 })
+    .withMessage('العنوان بالإنجليزية يجب أن لا يتجاوز 255 حرف'),
+
+  body('content_ar')
+    .notEmpty()
+    .withMessage('المحتوى بالعربية مطلوب')
+    .custom((value) => {
+      // التحقق من صحة HTML
+      if (value.includes('<script>')) {
+        throw new Error('HTML غير آمن');
+      }
+      return true;
+    }),
+
+  body('content_en')
+    .notEmpty()
+    .withMessage('المحتوى بالإنجليزية مطلوب')
+    .custom((value) => {
+      // التحقق من صحة HTML
+      if (value.includes('<script>')) {
+        throw new Error('HTML غير آمن');
+      }
+      return true;
+    }),
+
+  body('slug')
+    .notEmpty()
+    .withMessage('المعرف مطلوب')
+    .matches(/^[a-z0-9-]+$/)
+    .withMessage('المعرف يجب أن يحتوي على أحرف صغيرة وأرقام وشرطات فقط')
+    .isLength({ max: 100 })
+    .withMessage('المعرف يجب أن لا يتجاوز 100 حرف')
+];
+
 module.exports.validatePagination = [
   query('page')
     .optional()

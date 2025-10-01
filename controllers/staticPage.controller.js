@@ -1,7 +1,87 @@
-const { StaticPage, Admin } = require('../models');
-const { logger } = require('../utils/logger');
+const { StaticPage, User } = require('../models');
+const logger = require('../utils/logger');
 
 class StaticPageController {
+  /**
+   * إنشاء صفحة ثابتة جديدة (للمسؤولين فقط)
+   */
+  async createPage(req, res) {
+    try {
+      console.log('Request body:', req.body);
+      console.log('User:', req.user);
+      
+      const { title_ar, title_en, content_ar, content_en, slug } = req.body;
+      const adminId = req.user?.id; // Use optional chaining
+
+      // التحقق من وجود البيانات المطلوبة
+      if (!title_ar || !title_en || !content_ar || !content_en || !slug) {
+        return res.status(400).json({
+          success: false,
+          message: 'جميع الحقول مطلوبة',
+          data: null
+        });
+      }
+
+      // التحقق من عدم وجود صفحة بنفس الـ slug
+      const existingPage = await StaticPage.findOne({ where: { slug } });
+      if (existingPage) {
+        return res.status(400).json({
+          success: false,
+          message: 'يوجد صفحة بنفس المعرف بالفعل',
+          data: null
+        });
+      }
+
+      // إنشاء الصفحة
+      const page = await StaticPage.create({
+        slug,
+        title_ar,
+        title_en,
+        content_ar,
+        content_en,
+        updated_by: adminId
+      });
+
+      // جلب الصفحة مع معلومات المسؤول
+      const createdPage = await StaticPage.findByPk(page.id, {
+        include: [{
+          model: User,
+          as: 'Updater',
+          attributes: ['id', 'name', 'email']
+        }]
+      });
+
+      const response = {
+        id: createdPage.id,
+        slug: createdPage.slug,
+        title_ar: createdPage.title_ar,
+        title_en: createdPage.title_en,
+        content_ar: createdPage.content_ar,
+        content_en: createdPage.content_en,
+        updated_at: createdPage.updated_at,
+        updated_by: createdPage.Updater ? {
+          id: createdPage.Updater.id,
+          name: createdPage.Updater.name,
+          email: createdPage.Updater.email
+        } : null
+      };
+
+      res.status(201).json({
+        success: true,
+        message: 'تم إنشاء الصفحة بنجاح',
+        data: response
+      });
+
+    } catch (error) {
+      console.error('Full error:', error);
+      logger.error('Error creating static page: %o', error);
+      res.status(500).json({
+        success: false,
+        message: 'خطأ في الخادم',
+        data: null
+      });
+    }
+  }
   /**
    * جلب صفحة ثابتة حسب الـ slug واللغة
    */
@@ -23,7 +103,7 @@ class StaticPageController {
       const page = await StaticPage.findOne({
         where: { slug },
         include: [{
-          model: Admin,
+          model: User,
           as: 'Updater',
           attributes: ['id', 'name', 'email']
         }]
@@ -58,7 +138,7 @@ class StaticPageController {
       });
 
     } catch (error) {
-      logger.error('خطأ في جلب الصفحة الثابتة:', error);
+      logger.error('Error fetching static page: %o', error);
       res.status(500).json({
         success: false,
         message: 'خطأ في الخادم',
@@ -74,7 +154,7 @@ class StaticPageController {
     try {
       const pages = await StaticPage.findAll({
         include: [{
-          model: Admin,
+          model: User,
           as: 'Updater',
           attributes: ['id', 'name', 'email']
         }],
@@ -103,7 +183,7 @@ class StaticPageController {
       });
 
     } catch (error) {
-      logger.error('خطأ في جلب جميع الصفحات:', error);
+      logger.error('Error fetching all static pages: %o', error);
       res.status(500).json({
         success: false,
         message: 'خطأ في الخادم',
@@ -152,7 +232,7 @@ class StaticPageController {
       // جلب الصفحة المحدثة مع معلومات المسؤول
       const updatedPage = await StaticPage.findByPk(id, {
         include: [{
-          model: Admin,
+          model: User,
           as: 'Updater',
           attributes: ['id', 'name', 'email']
         }]
@@ -180,7 +260,7 @@ class StaticPageController {
       });
 
     } catch (error) {
-      logger.error('خطأ في تحديث الصفحة:', error);
+      logger.error('Error updating static page: %o', error);
       res.status(500).json({
         success: false,
         message: 'خطأ في الخادم',
@@ -199,7 +279,7 @@ class StaticPageController {
       const page = await StaticPage.findOne({
         where: { slug },
         include: [{
-          model: Admin,
+          model: User,
           as: 'Updater',
           attributes: ['id', 'name', 'email']
         }]
@@ -235,7 +315,46 @@ class StaticPageController {
       });
 
     } catch (error) {
-      logger.error('خطأ في جلب الصفحة:', error);
+      logger.error('Error fetching static page by slug: %o', error);
+      res.status(500).json({
+        success: false,
+        message: 'خطأ في الخادم',
+        data: null
+      });
+    }
+  }
+
+  /**
+   * حذف صفحة ثابتة
+   */
+  async deletePage(req, res) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      // البحث عن الصفحة
+      const page = await StaticPage.findByPk(id);
+
+      if (!page) {
+        return res.status(404).json({
+          success: false,
+          message: 'الصفحة غير موجودة',
+          data: null
+        });
+      }
+
+      // حذف الصفحة
+      await page.destroy();
+
+      logger.info(`Static page ${id} deleted by user ${userId}`);
+
+      res.json({
+        success: true,
+        message: 'تم حذف الصفحة بنجاح'
+      });
+
+    } catch (error) {
+      logger.error('Error deleting static page: %o', error);
       res.status(500).json({
         success: false,
         message: 'خطأ في الخادم',

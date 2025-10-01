@@ -32,14 +32,14 @@ const validatePaymentMethod = [
 router.get(
   '/admin/payment-methods',
   authenticate(),
-  checkPermission('payment_methods_view'),
+  checkPermission('payment_methods', 'view'),
   paymentMethodController.listPaymentMethods
 );
 
 router.post(
   '/admin/payment-methods',
   authenticate(),
-  checkPermission('payment_methods_create'),
+  checkPermission('payment_methods', 'create'),
   validate(validatePaymentMethod),
   paymentMethodController.createPaymentMethod
 );
@@ -47,7 +47,7 @@ router.post(
 router.put(
   '/admin/payment-methods/:id',
   authenticate(),
-  checkPermission('payment_methods_edit'),
+  checkPermission('payment_methods', 'edit'),
   validate(validatePaymentMethod),
   paymentMethodController.updatePaymentMethod
 );
@@ -55,14 +55,14 @@ router.put(
 router.delete(
   '/admin/payment-methods/:id',
   authenticate(),
-  checkPermission('payment_methods_delete'),
+  checkPermission('payment_methods', 'delete'),
   paymentMethodController.deletePaymentMethod
 );
 
 router.patch(
   '/admin/payment-methods/:id/toggle-status',
   authenticate(),
-  checkPermission('payment_methods_edit'),
+  checkPermission('payment_methods', 'edit'),
   paymentMethodController.togglePaymentMethodStatus
 );
 

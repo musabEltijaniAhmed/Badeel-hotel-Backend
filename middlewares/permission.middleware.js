@@ -66,6 +66,15 @@ const checkPermission = (resource, action) => {
       // التحقق من وجود الصلاحية
       const hasPermission = user.Role.Permissions && user.Role.Permissions.length > 0;
       
+      console.log('Permission Check:', {
+        userId: user.id,
+        role: user.Role.name,
+        resource,
+        action,
+        permissions: user.Role.Permissions.map(p => `${p.resource}:${p.action}`),
+        hasPermission
+      });
+      
       if (!hasPermission) {
         return res.status(403).json({
           message: 'FORBIDDEN',

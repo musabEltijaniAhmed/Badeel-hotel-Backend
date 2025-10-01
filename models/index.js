@@ -1,24 +1,26 @@
+const { Sequelize, DataTypes } = require('sequelize');
 const { sequelize, connectWithRetry } = require('../config/db');
 
 const models = {};
-models.PaymentMethod = require('./paymentMethod.model')(sequelize);
-models.User = require('./user.model')(sequelize);
-models.Admin = require('./admin.model')(sequelize);
-models.Room = require('./room.model')(sequelize);
-models.Booking = require('./booking.model')(sequelize);
-models.Review = require('./review.model')(sequelize);
-models.Notification = require('./notification.model')(sequelize);
-models.PasswordReset = require('./passwordReset.model')(sequelize);
-models.ActivityLog = require('./activityLog.model')(sequelize);
-models.Tenant = require('./tenant.model')(sequelize);
-models.Coupon = require('./coupons.model')(sequelize);
-models.Role = require('./role.model')(sequelize);
-models.Permission = require('./permission.model')(sequelize);
-models.RolePermission = require('./rolePermission.model')(sequelize);
-models.PropertyType = require('./propertyType.model')(sequelize);
-models.Property = require('./property.model')(sequelize);
-models.PropertyMedia = require('./propertyMedia.model')(sequelize);
-models.StaticPage = require('./staticPage.model')(sequelize);
+models.PaymentMethod = require('./paymentMethod.model')(sequelize, DataTypes);
+models.User = require('./user.model')(sequelize, DataTypes);
+models.Admin = require('./admin.model')(sequelize, DataTypes);
+models.Room = require('./room.model')(sequelize, DataTypes);
+models.Booking = require('./booking.model')(sequelize, DataTypes);
+models.Review = require('./review.model')(sequelize, DataTypes);
+models.Notification = require('./notification.model')(sequelize, DataTypes);
+models.PasswordReset = require('./passwordReset.model')(sequelize, DataTypes);
+models.ActivityLog = require('./activityLog.model')(sequelize, DataTypes);
+models.Tenant = require('./tenant.model')(sequelize, DataTypes);
+models.Coupon = require('./coupons.model')(sequelize, DataTypes);
+models.Role = require('./role.model')(sequelize, DataTypes);
+models.Permission = require('./permission.model')(sequelize, DataTypes);
+models.RolePermission = require('./rolePermission.model')(sequelize, DataTypes);
+models.PropertyType = require('./propertyType.model')(sequelize, DataTypes);
+models.Property = require('./property.model')(sequelize, DataTypes);
+models.PropertyMedia = require('./propertyMedia.model')(sequelize, DataTypes);
+models.StaticPage = require('./staticPage.model')(sequelize, DataTypes);
+models.SystemSetting = require('./systemSetting.model')(sequelize, DataTypes);
 
 // Associations
 models.Booking.belongsTo(models.User, { foreignKey: 'userId' });
@@ -75,8 +77,12 @@ models.Property.hasMany(models.Review, { foreignKey: 'propertyId', as: 'Reviews'
 // User and Review Associations
 models.User.hasMany(models.Review, { foreignKey: 'userId', as: 'UserReviews' });
 
-// StaticPage and Admin Associations
-models.StaticPage.belongsTo(models.Admin, { foreignKey: 'updated_by', as: 'Updater' });
-models.Admin.hasMany(models.StaticPage, { foreignKey: 'updated_by', as: 'UpdatedPages' });
+// StaticPage and User Associations
+models.StaticPage.belongsTo(models.User, { foreignKey: 'updated_by', as: 'Updater' });
+models.User.hasMany(models.StaticPage, { foreignKey: 'updated_by', as: 'UpdatedPages' });
+
+// SystemSetting and User Associations
+models.SystemSetting.belongsTo(models.User, { foreignKey: 'updated_by', as: 'Updater' });
+models.User.hasMany(models.SystemSetting, { foreignKey: 'updated_by', as: 'UpdatedSettings' });
 
 module.exports = { sequelize, connectWithRetry, ...models }; 
