@@ -1,10 +1,11 @@
 const router = require('express').Router();
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 const { authenticate } = require('../middlewares/auth.middleware');
 const { checkPermission, requireAdmin, requireStaff } = require('../middlewares/permission.middleware');
 const validate = require('../middlewares/validate.middleware');
 const upload = require('../middlewares/upload.middleware');
 const adminCtrl = require('../controllers/admin.controller');
+const userCtrl = require('../controllers/user.controller');
 const authz = require('../middlewares/authorize.middleware');
 const logAction = require('../middlewares/activityLog.middleware');
 
@@ -73,6 +74,33 @@ router.patch('/coupons/:id',
 router.delete('/coupons/:id', 
   checkPermission('coupons', 'delete'),
   couponCtrl.deleteCoupon
+);
+
+// Notifications - Admin only
+router.get('/notifications/stats',
+  requireAdmin,
+  checkPermission('notifications', 'view'),
+  validate([
+    query('start_date').optional().isISO8601().withMessage('Start date must be a valid ISO date'),
+    query('end_date').optional().isISO8601().withMessage('End date must be a valid ISO date'),
+    query('type').optional().isString().withMessage('Type must be a string')
+  ]),
+  userCtrl.getNotificationStats
+);
+
+router.post('/notifications',
+  requireAdmin,
+  checkPermission('notifications', 'send'),
+  validate([
+    body('users').isArray().withMessage('Users must be an array'),
+    body('users.*').isUUID().withMessage('Each user ID must be a valid UUID'),
+    body('title').notEmpty().withMessage('Title is required'),
+    body('body').notEmpty().withMessage('Body is required'),
+    body('data').optional().isObject().withMessage('Data must be an object'),
+    body('channels').optional().isArray().withMessage('Channels must be an array'),
+    body('channels.*').optional().isIn(['push', 'sms', 'email']).withMessage('Invalid channel')
+  ]),
+  userCtrl.sendNotification
 );
 
 module.exports = router; 

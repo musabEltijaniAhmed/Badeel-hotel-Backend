@@ -1,4 +1,6 @@
-const { Room, Booking, Review, Notification, Property, PropertyType, PropertyMedia } = require('../models');
+const { Room, Booking, Review, Notification, Property, PropertyType, PropertyMedia, sequelize } = require('../models');
+const { Op } = require('sequelize');
+const logger = require('../utils/logger');
 const { sendNotification } = require('../utils/fcm.service');
 const { sendSMS } = require('../utils/sms.service');
 const socket = require('../utils/socket');
@@ -157,6 +159,218 @@ exports.getNotifications = async (req, res, next) => {
     res.json(list);
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * Get notification statistics for admin
+ */
+/**
+ * Send notification to specific users (Admin only)
+ */
+exports.sendNotification = async (req, res, next) => {
+  try {
+    const { users, title, body, data = {}, channels = ['push'] } = req.body;
+    const adminId = req.user.id;
+
+    // Validate users array
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Users array is required and must not be empty',
+        error: 'INVALID_USERS'
+      });
+    }
+
+    // Get users with their FCM tokens
+    const targetUsers = await User.findAll({
+      where: {
+        id: { [Op.in]: users },
+        isActive: true
+      },
+      attributes: ['id', 'name', 'email', 'phone', 'fcmToken']
+    });
+
+    if (targetUsers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No active users found',
+        error: 'USERS_NOT_FOUND'
+      });
+    }
+
+    // Send notifications through selected channels
+    const results = await Promise.allSettled(targetUsers.map(async (user) => {
+      // Create notification record
+      const notification = await Notification.create({
+        userId: user.id,
+        title,
+        body,
+        data,
+        type: data.type || 'admin',
+        read: false,
+        created_by: adminId
+      });
+
+      const channelResults = {
+        notification_id: notification.id,
+        user_id: user.id,
+        channels: {}
+      };
+
+      // Send through each selected channel
+      for (const channel of channels) {
+        try {
+          switch (channel) {
+            case 'push':
+              if (user.fcmToken) {
+                await sendNotification(user.fcmToken, {
+                  notification: { title, body },
+                  data: { ...data, notification_id: notification.id }
+                });
+                channelResults.channels.push = 'success';
+              } else {
+                channelResults.channels.push = 'no_token';
+              }
+              break;
+
+            case 'sms':
+              if (user.phone) {
+                await sendSMS(user.phone, body);
+                channelResults.channels.sms = 'success';
+              } else {
+                channelResults.channels.sms = 'no_phone';
+              }
+              break;
+
+            case 'email':
+              if (user.email) {
+                // Assuming you have an email service
+                // await sendEmail(user.email, title, body);
+                channelResults.channels.email = 'success';
+              } else {
+                channelResults.channels.email = 'no_email';
+              }
+              break;
+          }
+        } catch (error) {
+          channelResults.channels[channel] = 'failed';
+          logger.error(`Failed to send ${channel} notification to user ${user.id}: %o`, error);
+        }
+      }
+
+      return channelResults;
+    }));
+
+    // Count successes and failures
+    const summary = results.reduce((acc, result) => {
+      if (result.status === 'fulfilled') {
+        acc.success++;
+        acc.details.push(result.value);
+      } else {
+        acc.failed++;
+        acc.errors.push(result.reason.message);
+      }
+      return acc;
+    }, { success: 0, failed: 0, details: [], errors: [] });
+
+    res.json({
+      success: true,
+      message: 'Notifications sent',
+      data: {
+        total_users: targetUsers.length,
+        successful_sends: summary.success,
+        failed_sends: summary.failed,
+        delivery_details: summary.details,
+        errors: summary.errors
+      }
+    });
+
+  } catch (error) {
+    logger.error('Error sending notifications: %o', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send notifications',
+      error: error.message
+    });
+  }
+};
+
+exports.getNotificationStats = async (req, res, next) => {
+  try {
+    const { start_date, end_date, type } = req.query;
+    const where = {};
+
+    // Add date filters if provided
+    if (start_date || end_date) {
+      where.createdAt = {};
+      if (start_date) where.createdAt[Op.gte] = new Date(start_date);
+      if (end_date) where.createdAt[Op.lte] = new Date(end_date);
+    }
+
+    // Add type filter if provided
+    if (type) where.type = type;
+
+    // Get total count
+    const totalCount = await Notification.count({ where });
+
+    // Get count by type
+    const typeStats = await Notification.findAll({
+      where,
+      attributes: [
+        'type',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['type']
+    });
+
+    // Get read/unread stats
+    const readStats = await Notification.findAll({
+      where,
+      attributes: [
+        'read',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['read']
+    });
+
+    // Get daily stats for the period
+    const dailyStats = await Notification.findAll({
+      where,
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('createdAt')), 'date'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: [sequelize.fn('DATE', sequelize.col('createdAt'))],
+      order: [[sequelize.fn('DATE', sequelize.col('createdAt')), 'ASC']]
+    });
+
+    res.json({
+      success: true,
+      data: {
+        total: totalCount,
+        by_type: typeStats.reduce((acc, stat) => {
+          acc[stat.type] = parseInt(stat.get('count'));
+          return acc;
+        }, {}),
+        by_status: {
+          read: parseInt(readStats.find(s => s.read)?.get('count') || 0),
+          unread: parseInt(readStats.find(s => !s.read)?.get('count') || 0)
+        },
+        daily_stats: dailyStats.map(stat => ({
+          date: stat.get('date'),
+          count: parseInt(stat.get('count'))
+        }))
+      }
+    });
+
+  } catch (error) {
+    logger.error('Error getting notification stats: %o', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notification statistics',
+      error: error.message
+    });
   }
 };
 

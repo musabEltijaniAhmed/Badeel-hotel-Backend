@@ -1,0 +1,272 @@
+{
+  "info": {
+    "_postman_id": "d9a7bc6b-7b9f-4b6e-bb1c-000000000001",
+    "name": "Room Booking API - Properties & Deposit System",
+    "description": "API للحجوزات مع نظام العقارات والمقدم - محدث تلقائياً",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "3.1.0"
+  },
+  "item": [
+    {
+      "name": "⚙️ Roles & Permissions Management",
+      "description": "إدارة الأدوار والصلاحيات - للمديرين فقط",
+      "item": [
+        {
+          "name": "List All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Create New Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('role_id', json.data.id);",
+                  "  console.log('Role created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"inventory_manager\",\n  \"description\": \"مدير المخزون - إدارة المنتجات والمخزون\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/{{role_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles", "{{role_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"inventory_supervisor\",\n  \"description\": \"مشرف المخزون - إدارة وتنظيم المخزون\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/{{role_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles", "{{role_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List All Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Create New Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.environment.set('permission_id', json.data.id);",
+                  "  console.log('Permission created with ID:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "permissions"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"manage_inventory\",\n  \"description\": \"إدارة المخزون\",\n  \"resource\": \"inventory\",\n  \"action\": \"manage\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Permission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions/{{permission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "permissions", "{{permission_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"manage_inventory\",\n  \"description\": \"إدارة المخزون والمنتجات\",\n  \"resource\": \"inventory\",\n  \"action\": \"manage\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Permission",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/permissions/{{permission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "permissions", "{{permission_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Assign Permission to Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/{{role_id}}/permissions/{{permission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles", "{{role_id}}", "permissions", "{{permission_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Remove Permission from Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/{{role_id}}/permissions/{{permission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles", "{{role_id}}", "permissions", "{{permission_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update All Role Permissions",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/roles/{{role_id}}/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "roles", "{{role_id}}", "permissions"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1, 2, 5, 8, 12]\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

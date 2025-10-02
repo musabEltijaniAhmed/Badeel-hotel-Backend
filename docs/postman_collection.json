@@ -2835,6 +2835,245 @@
           }
         }
       ]
+    },{
+      "name": "Get User Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications?page=1&limit=20&unread_only=false",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Page number"
+            },
+            {
+              "key": "limit",
+              "value": "20",
+              "description": "Items per page"
+            },
+            {
+              "key": "unread_only",
+              "value": "false",
+              "description": "Filter unread notifications only"
+            },
+            {
+              "key": "type",
+              "value": "booking",
+              "description": "Filter by notification type",
+              "disabled": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Mark Notification as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/{{notification_id}}/read",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "{{notification_id}}", "read"]
+        }
+      }
+    },
+    {
+      "name": "Mark All Notifications as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/read-all",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "read-all"]
+        }
+      }
+    },
+    {
+      "name": "Delete Notification",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/{{notification_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "{{notification_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Update FCM Token",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/token",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "token"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fcm_token\": \"your-fcm-token-here\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Update Notification Settings",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/settings",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "settings"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"push_enabled\": true,\n  \"email_enabled\": true,\n  \"sms_enabled\": false,\n  \"preferences\": {\n    \"booking_updates\": true,\n    \"promotions\": false,\n    \"reviews\": true,\n    \"system_updates\": true\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Notification Settings",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications/settings",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications", "settings"]
+        }
+      }
+    },
+    {
+      "name": "Admin: Send Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/notifications",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "notifications"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"users\": [\"{{user_id}}\"],\n  \"title\": \"عرض خاص\",\n  \"body\": \"خصم 20% على جميع الحجوزات\",\n  \"data\": {\n    \"type\": \"promotion\",\n    \"action\": \"open_bookings\"\n  },\n  \"channels\": [\"push\", \"email\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Admin: Send Bulk Notifications",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/notifications/bulk",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "notifications", "bulk"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"filter\": {\n    \"role\": \"customer\",\n    \"status\": \"active\",\n    \"last_active_after\": \"2025-01-01\"\n  },\n  \"title\": \"تحديث النظام\",\n  \"body\": \"تم إضافة ميزات جديدة للتطبيق\",\n  \"data\": {\n    \"type\": \"system_update\",\n    \"action\": \"open_updates\"\n  },\n  \"channels\": [\"push\", \"email\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Admin: Get Notification Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/notifications/stats?start_date=2025-01-01&end_date=2025-12-31",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "notifications", "stats"],
+          "query": [
+            {
+              "key": "start_date",
+              "value": "2025-01-01"
+            },
+            {
+              "key": "end_date",
+              "value": "2025-12-31"
+            },
+            {
+              "key": "type",
+              "value": "booking",
+              "disabled": true
+            }
+          ]
+        }
+      }
     }
   ]
 }

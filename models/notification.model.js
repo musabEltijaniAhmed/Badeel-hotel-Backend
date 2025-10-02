@@ -19,6 +19,20 @@ module.exports = (sequelize) => {
       defaultValue: false,
     },
     type: DataTypes.STRING,
+    created_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    }
   });
+
+  Notification.associate = (models) => {
+    Notification.belongsTo(models.User, { foreignKey: 'userId', as: 'User' });
+    Notification.belongsTo(models.User, { foreignKey: 'created_by', as: 'Creator' });
+  };
+
   return Notification;
 }; 

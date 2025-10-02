@@ -1,0 +1,225 @@
+{
+  "name": "📬 Notifications",
+  "description": "إدارة الإشعارات والتنبيهات",
+  "item": [
+    {
+      "name": "Get User Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/user/notifications",
+          "host": ["{{base_url}}"],
+          "path": ["user", "notifications"]
+        }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["user", "notifications"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "[\n  {\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174001\",\n    \"title\": \"تم تأكيد حجزك\",\n    \"body\": \"تم تأكيد حجزك في فندق الريتز كارلتون\",\n    \"data\": {\n      \"bookingId\": \"123e4567-e89b-12d3-a456-426614174002\",\n      \"type\": \"booking_confirmed\"\n    },\n    \"read\": false,\n    \"type\": \"booking\",\n    \"createdAt\": \"2025-01-01T12:00:00Z\",\n    \"updatedAt\": \"2025-01-01T12:00:00Z\"\n  }\n]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Notification Stats (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/notifications/stats?start_date=2025-01-01&end_date=2025-12-31&type=booking",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "notifications", "stats"],
+          "query": [
+            {
+              "key": "start_date",
+              "value": "2025-01-01",
+              "description": "Filter by start date (ISO format)"
+            },
+            {
+              "key": "end_date",
+              "value": "2025-12-31",
+              "description": "Filter by end date (ISO format)"
+            },
+            {
+              "key": "type",
+              "value": "booking",
+              "description": "Filter by notification type",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/notifications/stats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications", "stats"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"success\": true,\n  \"data\": {\n    \"total\": 123,\n    \"by_type\": {\n      \"booking\": 50,\n      \"payment\": 30,\n      \"system\": 43\n    },\n    \"by_status\": {\n      \"read\": 80,\n      \"unread\": 43\n    },\n    \"daily_stats\": [\n      {\n        \"date\": \"2025-01-01\",\n        \"count\": 10\n      },\n      {\n        \"date\": \"2025-01-02\",\n        \"count\": 15\n      }\n    ]\n  }\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Send Notifications (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"users\": [\"123e4567-e89b-12d3-a456-426614174001\"],\n  \"title\": \"عرض خاص\",\n  \"body\": \"احصل على خصم 20% على حجزك القادم\",\n  \"data\": {\n    \"type\": \"promotion\",\n    \"promoCode\": \"SUMMER20\"\n  },\n  \"channels\": [\"push\", \"sms\", \"email\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/admin/notifications",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "notifications"]
+        }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"users\": [\"123e4567-e89b-12d3-a456-426614174001\"],\n  \"title\": \"عرض خاص\",\n  \"body\": \"احصل على خصم 20% على حجزك القادم\",\n  \"data\": {\n    \"type\": \"promotion\",\n    \"promoCode\": \"SUMMER20\"\n  },\n  \"channels\": [\"push\", \"sms\", \"email\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"success\": true,\n  \"message\": \"Notifications sent\",\n  \"data\": {\n    \"total_users\": 1,\n    \"successful_sends\": 1,\n    \"failed_sends\": 0,\n    \"delivery_details\": [\n      {\n        \"notification_id\": \"123e4567-e89b-12d3-a456-426614174003\",\n        \"user_id\": \"123e4567-e89b-12d3-a456-426614174001\",\n        \"channels\": {\n          \"push\": \"success\",\n          \"sms\": \"success\",\n          \"email\": \"success\"\n        }\n      }\n    ],\n    \"errors\": []\n  }\n}"
+          }
+        },
+        {
+          "name": "Error - Invalid Users",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"users\": [],\n  \"title\": \"عرض خاص\",\n  \"body\": \"احصل على خصم 20% على حجزك القادم\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"success\": false,\n  \"message\": \"Users array is required and must not be empty\",\n  \"error\": \"INVALID_USERS\"\n}"
+          }
+        }
+      ]
+    }
+  ]
+}

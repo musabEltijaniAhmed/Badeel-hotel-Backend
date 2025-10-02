@@ -19,11 +19,11 @@ module.exports = (sequelize) => {
         isEmail: true,
       },
     },
-        password: {
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-        token: {
+    token: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
@@ -46,6 +46,15 @@ module.exports = (sequelize) => {
       },
       comment: 'دور المستخدم في النظام',
     },
+    fcmToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Firebase Cloud Messaging token for push notifications',
+    },
+  }, {
+    tableName: 'Users',
+    underscored: false,
+    timestamps: true
   });
   return User;
 }; 

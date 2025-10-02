@@ -75,10 +75,48 @@ class StaticPageController {
     } catch (error) {
       console.error('Full error:', error);
       logger.error('Error creating static page: %o', error);
+
+      // Handle Sequelize validation errors
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(422).json({
+          success: false,
+          message: 'Validation error',
+          errors: error.errors.map(err => ({
+            field: err.path,
+            message: err.message
+          }))
+        });
+      }
+
+      // Handle unique constraint errors
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(409).json({
+          success: false,
+          message: 'Duplicate entry',
+          errors: error.errors.map(err => ({
+            field: err.path,
+            message: err.message
+          }))
+        });
+      }
+
+      // Handle foreign key errors
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid reference',
+          errors: [{
+            field: error.fields[0],
+            message: `Invalid ${error.fields[0]} reference`
+          }]
+        });
+      }
+
+      // Handle other errors
       res.status(500).json({
         success: false,
-        message: 'خطأ في الخادم',
-        data: null
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }

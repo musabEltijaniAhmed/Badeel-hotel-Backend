@@ -12,7 +12,15 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique: true,
       validate: {
-        isIn: [['customer', 'admin', 'staff']]
+        notEmpty: { msg: 'Role name is required' },
+        len: {
+          args: [2, 50],
+          msg: 'Role name must be between 2 and 50 characters'
+        },
+        is: {
+          args: /^[a-z_]+$/,
+          msg: 'Role name must contain only lowercase letters and underscores'
+        }
       }
     },
     description: {
