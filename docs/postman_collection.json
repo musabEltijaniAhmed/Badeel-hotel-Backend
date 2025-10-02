@@ -3074,6 +3074,204 @@
           ]
         }
       }
+    },
+    {
+      "name": "Get Dashboard Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/dashboard/stats?period=daily&compare_previous=true",
+          "host": ["{{base_url}}"],
+          "path": ["admin", "dashboard", "stats"],
+          "query": [
+            {
+              "key": "period",
+              "value": "daily",
+              "description": "Period for stats (daily, weekly, monthly)"
+            },
+            {
+              "key": "compare_previous",
+              "value": "true",
+              "description": "Include comparison with previous period"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/stats?period=daily"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": {
+              "success": true,
+              "data": {
+                "overview": {
+                  "total_users": 150,
+                  "total_properties": 45,
+                  "total_bookings": 25,
+                  "total_revenue": 15000,
+                  "active_bookings": 12,
+                  "pending_reviews": 5,
+                  "system_uptime": "5d 12h",
+                  "last_update": "2025-10-02T15:30:00Z"
+                },
+                "growth_metrics": {
+                  "user_growth": {
+                    "current_period": 150,
+                    "previous_period": 140,
+                    "growth_rate": 7.14
+                  },
+                  "revenue_growth": {
+                    "current_period": 15000,
+                    "previous_period": 12000,
+                    "growth_rate": 25
+                  },
+                  "booking_growth": {
+                    "current_period": 25,
+                    "previous_period": 20,
+                    "growth_rate": 25
+                  }
+                },
+                "financial_summary": {
+                  "total_revenue": 15000,
+                  "pending_payments": 3,
+                  "refunds_issued": 1,
+                  "commission_earned": 1500,
+                  "payment_methods": {
+                    "credit_card": {
+                      "count": 15,
+                      "total": 10000
+                    },
+                    "bank_transfer": {
+                      "count": 10,
+                      "total": 5000
+                    }
+                  }
+                },
+                "operational_metrics": {
+                  "average_booking_value": 600,
+                  "occupancy_rate": 26.67,
+                  "booking_cancellation_rate": 4,
+                  "total_bookings_by_status": {
+                    "active": {
+                      "count": 12,
+                      "avg_amount": 625
+                    },
+                    "completed": {
+                      "count": 12,
+                      "avg_amount": 575
+                    },
+                    "cancelled": {
+                      "count": 1,
+                      "avg_amount": 600
+                    }
+                  }
+                },
+                "user_metrics": {
+                  "by_role": [
+                    {
+                      "role": "customer",
+                      "count": 140,
+                      "last_signup": "2025-10-02T14:30:00Z"
+                    },
+                    {
+                      "role": "admin",
+                      "count": 5,
+                      "last_signup": "2025-09-15T10:00:00Z"
+                    },
+                    {
+                      "role": "staff",
+                      "count": 5,
+                      "last_signup": "2025-09-20T11:15:00Z"
+                    }
+                  ]
+                },
+                "property_metrics": {
+                  "by_type": [
+                    {
+                      "type": "Apartment",
+                      "count": 20,
+                      "avg_price": 500
+                    },
+                    {
+                      "type": "Villa",
+                      "count": 15,
+                      "avg_price": 1200
+                    },
+                    {
+                      "type": "Studio",
+                      "count": 10,
+                      "avg_price": 300
+                    }
+                  ],
+                  "top_performers": [
+                    {
+                      "id": "123",
+                      "name": "Luxury Villa",
+                      "booking_count": 8,
+                      "total_revenue": 9600
+                    }
+                  ]
+                },
+                "review_metrics": {
+                  "average_rating": 4.5,
+                  "total_reviews": 20,
+                  "positive_reviews": 18,
+                  "negative_reviews": 1,
+                  "satisfaction_rate": 90
+                },
+                "recent_activity": {
+                  "latest_bookings": [
+                    {
+                      "id": "456",
+                      "amount": 600,
+                      "status": "active",
+                      "created_at": "2025-10-02T15:00:00Z",
+                      "user": {
+                        "id": "789",
+                        "name": "John Doe",
+                        "email": "john@example.com"
+                      },
+                      "property": {
+                        "id": "123",
+                        "name": "Luxury Villa"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     }
+    
   ]
 }

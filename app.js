@@ -17,6 +17,7 @@ const propertyMediaRoutes = require('./routes/propertyMedia.routes');
 const staticPageRoutes = require('./routes/staticPage.routes');
 const reviewRoutes = require('./routes/review.routes');
 const systemSettingRoutes = require('./routes/systemSetting.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 
 const errorMiddleware = require('./middlewares/error.middleware');
 
@@ -54,6 +55,7 @@ app.use('/', paymentMethodRoutes); // Payment Methods
 app.use('/', propertyMediaRoutes); // Property Media Routes
 app.use('/reviews', reviewRoutes); // Reviews Routes
 app.use('/', systemSettingRoutes); // System Settings Routes
+app.use('/admin/dashboard', dashboardRoutes); // Dashboard Routes
 
 // Error Handler
 app.use(errorMiddleware);
