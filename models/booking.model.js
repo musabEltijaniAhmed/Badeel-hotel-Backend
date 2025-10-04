@@ -11,10 +11,11 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    roomId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
+    // roomId: {
+    //   type: DataTypes.UUID,
+    //   allowNull: true, // جعله اختيارياً للتوافق مع النظام القديم
+    //   defaultValue: null, // قيمة افتراضية
+    // }, // تم إزالته مؤقتاً لتجنب مشاكل قاعدة البيانات
     startDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,

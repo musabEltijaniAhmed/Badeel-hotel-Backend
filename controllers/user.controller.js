@@ -155,7 +155,11 @@ exports.createReview = async (req, res, next) => {
 
 exports.getNotifications = async (req, res, next) => {
   try {
-    const list = await Notification.findAll({ where: { userId: req.user.id }, order: [['createdAt', 'DESC']] });
+    const list = await Notification.findAll({ 
+      where: { userId: req.user.id }, 
+      order: [['createdAt', 'DESC']],
+      attributes: ['id', 'userId', 'title', 'body', 'data', 'read', 'type', 'createdAt', 'updatedAt']
+    });
     res.json(list);
   } catch (error) {
     next(error);
@@ -208,8 +212,8 @@ exports.sendNotification = async (req, res, next) => {
         body,
         data,
         type: data.type || 'admin',
-        read: false,
-        created_by: adminId
+        read: false
+        // created_by: adminId // Temporarily disabled until column is added to database
       });
 
       const channelResults = {
@@ -518,6 +522,9 @@ exports.createPropertyBooking = async (req, res, next) => {
     // إنشاء الحجز
     const booking = await Booking.create({
       userId: req.user.id,
+      // roomId: null, // تم إزالته - الحجوزات مرتبطة بالعقارات فقط
+      startDate: checkInDate,
+      endDate: checkOutDate,
       property_id,
       check_in: checkInDate,
       check_out: checkOutDate,
